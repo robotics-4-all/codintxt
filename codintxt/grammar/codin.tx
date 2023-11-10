@@ -1,0 +1,223 @@
+Model:
+    imports*=Import
+    brokers*=MessageBroker
+;
+
+Placement:
+    'x:' x=INT
+    'y:' x=INT
+    'width:' x=INT
+    'height:' x=INT
+;
+
+
+VisualComponent: Gauge | Logs
+;
+
+Gauge:
+    'name:' name=ID
+    'label:' name=STRING
+    'topic:' topic=STRING
+    'attribute:' attribute=STRING
+    'broker:' broker=[MessageBroker:FQN]
+    'minValue:' minValue=FLOAT
+    'maxValue:' maxValue=FLOAT
+    ('leftColor:' leftColor=Color)?
+    ('rightColor:' rightColor=Color)?
+    ('levels:' levels=INT)?
+    ('hideTxt:' hideTxt=BOOL)?
+    ('unit:' unit=STRING)?
+;
+
+Logs:
+    'name:' name=ID
+    'label:' name=STRING
+    'topic:' topic=STRING
+    'attribute:' attribute=STRING
+    'broker:' broker=[MessageBroker:FQN]
+    ('maxMessages:' maxMsg=INT)?
+    ('highlights:' '-' colorKeys=Highlight['-'])?
+;
+
+Value:
+    'name:' name=ID
+    'label:' name=STRING
+    'topic:' topic=STRING
+    'attribute:' attribute=STRING
+    'broker:' broker=[MessageBroker:FQN]
+    ('unit:' unit=STRING)?
+;
+
+Alive:
+    'name:' name=ID
+    'label:' name=STRING
+    'topic:' topic=STRING
+    'broker:' broker=[MessageBroker:FQN]
+    ('timeout:' timeout=INT)?  // ms
+;
+
+JsonViewer:
+    'name:' name=ID
+    'label:' name=STRING
+    'topic:' topic=STRING
+    'broker:' broker=[MessageBroker:FQN]
+    ('attribute:' attribute=STRING)?
+;
+
+Button:
+    'name:' name=ID
+    'label:' name=STRING
+    'topic:' topic=STRING
+    'dynamic:' dynamic=BOOL
+    'broker:' broker=[MessageBroker:FQN]
+    'payload:' '-' attribute=Attribute['-']
+    'color:' color=Color
+    'background:' bg=Color
+    'hover:' hover=Color
+;
+
+AlignType:
+    'Center' |
+    'Left' |
+    'Right' |
+    'Top' |
+    'Bottom' |
+    'Horizontal' |
+    'Vertical' |
+;
+
+Buttons:
+    'name:' name=ID
+    'label:' name=STRING
+    'alignTxt:' alignTxt=AlignType
+    'alignBtns:' alignBtns=AlignType
+    'buttons:' buttons*=Button
+;
+
+Plot:
+    'name:' name=ID
+    'label:' name=STRING
+    'topic:' topic=STRING
+    'ptype:' ptype=PlotType
+    'attribute:' attribute=STRING
+    'color:' color=Color
+    'smooth:' smooth=BOOL
+    'verticalGrid:' verticalGrid=BOOL
+    'horizontalGrid:' horizontalGrid=BOOL
+    'xAxis:' xAxis=BOOL
+    'yAxis:' yAxis=BOOL
+    'legend:' legend=BOOL
+    'maxValues:' maxValues=INT
+    'legendPosition:' legendPosition=AlignType
+    'broker:' broker=[MessageBroker:FQN]
+;
+
+PlotView:
+    'name:' name=ID
+    'label:' name=STRING
+
+;
+
+PlotType:
+    'Line' |
+    'Bar'
+;
+
+Highlight:
+    'key:' key=STRING
+    'color:' color=Color
+;
+
+// TODO
+Color:
+    'Red' |
+    'Blue'
+;
+
+MessageBroker:
+    AMQPBroker | MQTTBroker | RedisBroker
+;
+
+
+BrokerConnection:
+    'ref' ':' ref=[MessageBroker:FQN]
+    'auth' ':' auth=Authentication
+;
+
+
+Authentication: AuthPlain | AuthApiKey | AuthCert;
+
+AuthPlain:
+    'username' ':' username=STRING
+    'password' ':' password=STRING
+;
+
+AuthApiKey:
+    'key' ':' key=STRING
+;
+
+AuthCert:
+    ('cert' ':' cert=STRING) | ('certPath' ':' certPath=STRING)
+;
+
+AMQPBroker:
+    'Broker<AMQP>' name=ID
+    (
+        ('host:' host=STRING)
+        ('port:' port=INT)
+        ('vhost:' vhost=STRING)?
+        ('topicExchange:' topicE=STRING)?
+        ('rpcExchange:' rpcE=STRING)?
+        ('ssl' ':' ssl=BOOL)?
+        ('auth' ':' auth=Authentication)?
+    )#
+    'end'
+;
+
+MQTTBroker:
+    'Broker<MQTT>' name=ID
+    (
+        ('host:' host=STRING)
+        ('port:' port=INT)
+        ('ssl' ':' ssl=BOOL)?
+        ('auth' ':' auth=Authentication)?
+    )#
+    'end'
+;
+
+RedisBroker:
+    'Broker<Redis>' name=ID
+    (
+        ('host:' host=STRING)
+        ('port:' port=INT)
+        ('db:' db=INT)?
+        ('ssl' ':' ssl=BOOL)?
+        ('auth' ':' auth=Authentication)?
+    )#
+    'end'
+;
+
+
+ADDRESS_ID:
+	/([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}/
+;
+
+NID:
+	/(.*?)\n/
+;
+
+FQN: ID+['.'];
+FQNI: ID+['.']('.*')?;
+Import: 'import' importURI=FQNI ('as' name=ID)?;
+
+Description: /\#(.*?)$/;
+
+// Special rule for comments. Comments start with //
+
+// Comments
+Comment: CommentLine | CommentBlock ;
+
+CommentLine: /\/\/.*?$/;
+
+CommentBlock: /\/\*(.|\n)*?\*\//;
+
