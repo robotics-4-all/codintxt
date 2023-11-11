@@ -1,6 +1,18 @@
 Model:
     imports*=Import
+    metadata=Metadata
     brokers*=MessageBroker
+;
+
+Metadata:
+    'Metadata'
+    (
+        ('name:' name=STRING)
+        ('description:' description=STRING)
+        ('author:' author=STRING)
+        ('token:' token=STRING)
+    )#
+    'end'
 ;
 
 Placement:
@@ -11,69 +23,93 @@ Placement:
 ;
 
 
-VisualComponent: Gauge | Logs
+VisualComponent:
+    Gauge           |
+    LogsDisplay     |
+    ValueDisplay    |
+    AliveDisplay    |
+    JsonViewer      |
+    PlotViewer      |
+    Button
+;
+
+VisualComponentCommon:
+(
+    ('name:' name=ID)
+    ('label:' name=STRING)
+    ('topic:' topic=STRING)
+    ('broker:' broker=BrokerConnection)
+)#
 ;
 
 Gauge:
-    'name:' name=ID
-    'label:' name=STRING
-    'topic:' topic=STRING
-    'attribute:' attribute=STRING
-    'broker:' broker=[MessageBroker:FQN]
-    'minValue:' minValue=FLOAT
-    'maxValue:' maxValue=FLOAT
+'Gauge' name=ID
+(
+    (common=VisualComponentCommon)
+    ('attribute:' attribute=STRING)
+    ('minValue:' minValue=FLOAT)
+    ('maxValue:' maxValue=FLOAT)
     ('leftColor:' leftColor=Color)?
     ('rightColor:' rightColor=Color)?
     ('levels:' levels=INT)?
     ('hideTxt:' hideTxt=BOOL)?
     ('unit:' unit=STRING)?
+)#
+'end'
 ;
 
-Logs:
+LogsDisplay:
     'name:' name=ID
     'label:' name=STRING
     'topic:' topic=STRING
     'attribute:' attribute=STRING
-    'broker:' broker=[MessageBroker:FQN]
+    'broker:' broker=BrokerConnection
     ('maxMessages:' maxMsg=INT)?
     ('highlights:' '-' colorKeys=Highlight['-'])?
 ;
 
-Value:
+ValueDisplay:
     'name:' name=ID
     'label:' name=STRING
     'topic:' topic=STRING
     'attribute:' attribute=STRING
-    'broker:' broker=[MessageBroker:FQN]
+    'broker:' broker=BrokerConnection
     ('unit:' unit=STRING)?
 ;
 
-Alive:
+AliveDisplay:
     'name:' name=ID
     'label:' name=STRING
     'topic:' topic=STRING
-    'broker:' broker=[MessageBroker:FQN]
+    'broker:' broker=BrokerConnection
     ('timeout:' timeout=INT)?  // ms
 ;
 
 JsonViewer:
-    'name:' name=ID
+'JsonViewer' name=ID
+(
     'label:' name=STRING
     'topic:' topic=STRING
-    'broker:' broker=[MessageBroker:FQN]
+    'broker:' broker=BrokerConnection
     ('attribute:' attribute=STRING)?
+)#
+'end'
 ;
 
 Button:
-    'name:' name=ID
-    'label:' name=STRING
-    'topic:' topic=STRING
-    'dynamic:' dynamic=BOOL
-    'broker:' broker=[MessageBroker:FQN]
-    'payload:' '-' attribute=Attribute['-']
-    'color:' color=Color
-    'background:' bg=Color
-    'hover:' hover=Color
+'Button' name=ID
+(
+    ('name:' name=ID)
+    ('label:' name=STRING)
+    ('topic:' topic=STRING)
+    ('dynamic:' dynamic=BOOL)
+    ('color:' color=Color)
+    ('background:' bg=Color)
+    ('hover:' hover=Color)
+    ('broker:' broker=BrokerConnection)
+    ('payload:' '-' attribute=Attribute['-'])
+)#
+'end'
 ;
 
 AlignType:
