@@ -13,7 +13,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 
-from codintxt.language import build_model
+from codintxt.language import build_model, model_2_codin, model_2_json
 
 API_KEY = os.getenv("API_KEY", "API_KEY")
 
@@ -50,6 +50,11 @@ if not os.path.exists(TMP_DIR):
 
 
 class ValidationModel(BaseModel):
+    name: str
+    model: str
+
+
+class TransformationModel(BaseModel):
     name: str
     model: str
 
@@ -142,4 +147,148 @@ async def validate_b64(base64_model: str,
         resp['status'] = 404
         resp['message'] = str(e)
         raise HTTPException(status_code=400, detail=f"Validation error: {e}")
+    return resp
+
+
+@api.post("/generate/json")
+async def gen_json(gen_auto_model: TransformationModel = Body(...),
+                   api_key: str = Security(get_api_key)):
+    resp = {
+        'status': 200,
+        'message': '',
+        'model_json': ''
+    }
+    model =  gen_auto_model.model
+    u_id = uuid.uuid4().hex[0:8]
+    model_path = os.path.join(
+        TMP_DIR,
+        f'model-{u_id}.auto'
+    )
+    gen_path = os.path.join(
+        TMP_DIR,
+        f'gen-{u_id}'
+    )
+    if not os.path.exists(gen_path):
+        os.mkdir(gen_path)
+    with open(model_path, 'w') as f:
+        f.write(model)
+    try:
+        model = build_model(model_path)
+        json_model = model_2_json(model)
+        resp['message'] = 'Codintxt-2-JsonModel Transformation success'
+        resp['model_json'] = json_model
+    except Exception as e:
+        print(e)
+        resp['status'] = 404
+        resp['message'] = str(e)
+        raise HTTPException(status_code=400,
+                            detail=f"Codintxt.Transformation error: {e}")
+    return resp
+
+
+@api.post("/generate/json/file")
+async def gen_json_file(model_file: UploadFile = File(...),
+                        api_key: str = Security(get_api_key)):
+    resp = {
+        'status': 200,
+        'message': '',
+        'model_json': ''
+    }
+    fd = model_file.file
+    u_id = uuid.uuid4().hex[0:8]
+    model_path = os.path.join(
+        TMP_DIR,
+        f'model-{u_id}.auto'
+    )
+    gen_path = os.path.join(
+        TMP_DIR,
+        f'gen-{u_id}'
+    )
+    if not os.path.exists(gen_path):
+        os.mkdir(gen_path)
+    with open(model_path, 'w') as f:
+        f.write(fd.read().decode('utf8'))
+    try:
+        model = build_model(model_path)
+        json_model = model_2_json(model)
+        resp['message'] = 'Codintxt-2-JsonModel Transformation success'
+        resp['model_json'] = json_model
+    except Exception as e:
+        print(e)
+        resp['status'] = 404
+        resp['message'] = str(e)
+        raise HTTPException(status_code=400,
+                            detail=f"Codintxt.Transformation error: {e}")
+    return resp
+
+
+@api.post("/generate/codin")
+async def gen_codin(gen_auto_model: TransformationModel = Body(...),
+                    api_key: str = Security(get_api_key)):
+    resp = {
+        'status': 200,
+        'message': '',
+        'codin_json': ''
+    }
+    model =  gen_auto_model.model
+    u_id = uuid.uuid4().hex[0:8]
+    model_path = os.path.join(
+        TMP_DIR,
+        f'model-{u_id}.auto'
+    )
+    gen_path = os.path.join(
+        TMP_DIR,
+        f'gen-{u_id}'
+    )
+    if not os.path.exists(gen_path):
+        os.mkdir(gen_path)
+    with open(model_path, 'w') as f:
+        f.write(model)
+    try:
+        model = build_model(model_path)
+        codin_json = model_2_codin(model)
+        resp['message'] = 'Codintxt-2-CodinJson Transformation success'
+        resp['codin_json'] = codin_json
+    except Exception as e:
+        print(e)
+        resp['status'] = 404
+        resp['message'] = str(e)
+        raise HTTPException(status_code=400,
+                            detail=f"Codintxt.Transformation error: {e}")
+    return resp
+
+
+@api.post("/generate/codin/file")
+async def gen_codin_file(model_file: UploadFile = File(...),
+                         api_key: str = Security(get_api_key)):
+    resp = {
+        'status': 200,
+        'message': '',
+        'codin_json': ''
+    }
+    fd = model_file.file
+    u_id = uuid.uuid4().hex[0:8]
+    model_path = os.path.join(
+        TMP_DIR,
+        f'model-{u_id}.auto'
+    )
+    gen_path = os.path.join(
+        TMP_DIR,
+        f'gen-{u_id}'
+    )
+    if not os.path.exists(gen_path):
+        os.mkdir(gen_path)
+    with open(model_path, 'w') as f:
+        f.write(fd.read().decode('utf8'))
+    try:
+        model = build_model(model_path)
+        codin_json = model_2_codin(model)
+        resp['message'] = 'Codintxt-2-CodinJson Transformation success'
+        resp['codin_json'] = codin_json
+    except Exception as e:
+        print(e)
+        resp['status'] = 404
+        resp['message'] = str(e)
+        raise HTTPException(status_code=400,
+                            detail=f"Codintxt.Transformation error: {e}")
     return resp

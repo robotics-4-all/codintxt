@@ -210,6 +210,11 @@ def model_2_codin(model) -> Dict[str, Any]:
     return _json
 
 
+def model_2_json(model) -> Dict[str, Any]:
+    _model = model_2_object(model)
+    return _model.model_dump()
+
+
 def build_model(model_path: str, debug: bool = False):
     # Parse model
     mm = get_metamodel(debug=debug)

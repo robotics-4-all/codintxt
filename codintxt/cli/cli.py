@@ -3,7 +3,7 @@ import os
 from rich import print, pretty
 import json
 
-from codintxt.language import build_model, model_2_codin
+from codintxt.language import build_model, model_2_codin, model_2_json
 
 pretty.install()
 
@@ -36,6 +36,12 @@ def generate(ctx, model_path, generator):
         model = build_model(model_path)
         _model = model_2_codin(model)
         filepath = f'codin-{model.metadata.name}.json'
+        with open(filepath, 'w') as fp:
+            json.dump(_model, fp)
+    if generator == 'json':
+        model = build_model(model_path)
+        _model = model_2_json(model)
+        filepath = f'codintxt-{model.metadata.name}.json'
         with open(filepath, 'w') as fp:
             json.dump(_model, fp)
 
