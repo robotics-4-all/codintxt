@@ -1,8 +1,9 @@
 import click
 import os
 from rich import print, pretty
+import json
 
-from codintxt.language import build_model, model_2_object
+from codintxt.language import build_model, model_2_codin
 
 pretty.install()
 
@@ -24,8 +25,6 @@ def cli(ctx):
 def validate(ctx, model_path):
     model = build_model(model_path)
     print('[*] Model validation success!!')
-    _model = model_2_object(model)
-    # print(_model)
 
 
 @cli.command('gen', help='M2T/M2M transformations')
@@ -35,8 +34,10 @@ def validate(ctx, model_path):
 def generate(ctx, model_path, generator):
     if generator == 'codin':
         model = build_model(model_path)
-        _model = model_2_object(model)
-        print(_model)
+        _model = model_2_codin(model)
+        filepath = f'codin-{model.metadata.name}.json'
+        with open(filepath, 'w') as fp:
+            json.dump(_model, fp)
 
 
 def main():
