@@ -89,10 +89,7 @@ class CodinTxtModel(BaseModel):
     components: List[Any]
 
 
-def build_model(model_path: str, debug: bool = False):
-    # Parse model
-    mm = get_metamodel(debug=debug)
-    model = mm.model_from_file(model_path)
+def model_2_object(model):
     _brokers = []
     _components = []
     for broker in model.brokers:
@@ -202,8 +199,13 @@ def build_model(model_path: str, debug: bool = False):
         brokers=_brokers,
         components=_components,
     )
-    _model_json = _model.model_dump(mode="json")
-    print(_model_json)
+    return _model
+
+
+def build_model(model_path: str, debug: bool = False):
+    # Parse model
+    mm = get_metamodel(debug=debug)
+    model = mm.model_from_file(model_path)
     return model
 
 
