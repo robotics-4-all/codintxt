@@ -6,7 +6,7 @@ import textx.scoping.providers as scoping_providers
 from rich import print, pretty
 from textx.scoping import ModelRepository, GlobalModelRepository
 from codintxt.definitions import MODEL_REPO_PATH
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from pydantic import BaseModel
 
 pretty.install()
@@ -84,8 +84,15 @@ class Broker(BaseModel):
     auth: Dict[str, Any]
 
 
+# Child class does not serialize. Workaround to use the BaseModel
+class MQTTBroker(Broker):
+    basePath: Optional[str] = ''
+    webPath: Optional[str] = '/mqtt'
+    webPort: Optional[int] = 8883
+
+
 class CodinTxtModel(BaseModel):
-    brokers: List[Broker]
+    brokers: List[Any]
     components: List[Any]
 
 
@@ -93,16 +100,31 @@ def model_2_object(model):
     _brokers = []
     _components = []
     for broker in model.brokers:
-        br = Broker(
-            name=broker.name,
-            btype=broker.__class__.__name__,
-            host=broker.host,
-            port=broker.port,
-            auth={
-                'username': broker.auth.username,
-                'password': broker.auth.password,
-            }
-        )
+        if broker.__class__.__name__ == 'MQTTBroker':
+            br = MQTTBroker(
+                name=broker.name,
+                btype=broker.__class__.__name__,
+                host=broker.host,
+                port=broker.port,
+                basePath=broker.basePath,
+                webPath=broker.webPath,
+                webPort=broker.webPort,
+                auth={
+                    'username': broker.auth.username,
+                    'password': broker.auth.password,
+                }
+            )
+        else:
+            br = Broker(
+                name=broker.name,
+                btype=broker.__class__.__name__,
+                host=broker.host,
+                port=broker.port,
+                auth={
+                    'username': broker.auth.username,
+                    'password': broker.auth.password,
+                }
+            )
         _brokers.append(br)
     for component in model.components:
         if component.__class__.__name__ == 'Gauge':
@@ -212,7 +234,7 @@ def model_2_codin(model) -> Dict[str, Any]:
 
 def model_2_json(model) -> Dict[str, Any]:
     _model = model_2_object(model)
-    return _model.model_dump()
+    return _model.dict(exclude_unset=True)
 
 
 def build_model(model_path: str, debug: bool = False):

@@ -6,6 +6,8 @@ end
 Broker<MQTT> BrokerA
     host: "locsys.issel.ee.auth.gr"
     port: 1883  // Change this accordingly
+    webPath: "/mqtt"
+    webPort: 8883
     auth:
         username: "r4a"
         password: "r4a123$"
@@ -14,6 +16,8 @@ end
 Broker<MQTT> BrokerB
     host: "locsys.issel.ee.auth.gr"
     port: 1883  // Change this accordingly
+    webPath: "/mqtt"
+    webPort: 8883
     auth:
         username: "r4a"
         password: "r4a123$"

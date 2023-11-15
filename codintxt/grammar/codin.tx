@@ -230,6 +230,9 @@ MQTTBroker:
     (
         ('host:' host=STRING)
         ('port:' port=INT)
+        ('basePath:' basePath=STRING)?
+        ('webPath:' webPath=STRING)?
+        ('webPort:' webPort=INT)?
         ('ssl' ':' ssl=BOOL)?
         ('auth' ':' auth=Authentication)?
     )#
