@@ -2,24 +2,25 @@ Model:
     imports*=Import
     metadata=Metadata
     brokers*=MessageBroker
+	components*=VisualComponent
 ;
 
 Metadata:
     'Metadata'
     (
         ('name:' name=STRING)
-        ('description:' description=STRING)
-        ('author:' author=STRING)
-        ('token:' token=STRING)
+        ('description:' description=STRING)?
+        ('author:' author=STRING)?
+        ('token:' token=STRING)?
     )#
     'end'
 ;
 
 Placement:
     'x:' x=INT
-    'y:' x=INT
-    'width:' x=INT
-    'height:' x=INT
+    'y:' y=INT
+    'width:' w=INT
+    'height:' h=INT
 ;
 
 
@@ -33,19 +34,14 @@ VisualComponent:
     Button
 ;
 
-VisualComponentCommon:
-(
-    ('name:' name=ID)
-    ('label:' name=STRING)
-    ('topic:' topic=STRING)
-    ('broker:' broker=BrokerConnection)
-)#
-;
 
 Gauge:
 'Gauge' name=ID
 (
-    (common=VisualComponentCommon)
+    ('label:' label=STRING)
+    ('topic:' topic=STRING)
+    ('broker:' broker=[MessageBroker])
+    ('position:' position=Placement)
     ('attribute:' attribute=STRING)
     ('minValue:' minValue=FLOAT)
     ('maxValue:' maxValue=FLOAT)
@@ -59,38 +55,48 @@ Gauge:
 ;
 
 LogsDisplay:
-    'name:' name=ID
-    'label:' name=STRING
-    'topic:' topic=STRING
-    'attribute:' attribute=STRING
-    'broker:' broker=BrokerConnection
+'LogsDisplay' name=ID
+(
+    ('broker:' broker=[MessageBroker])
+    ('attribute:' attribute=STRING)
     ('maxMessages:' maxMsg=INT)?
     ('highlights:' '-' colorKeys*=Highlight['-'])?
+)#
+'end'
 ;
 
 ValueDisplay:
-    'name:' name=ID
-    'label:' name=STRING
-    'topic:' topic=STRING
-    'attribute:' attribute=STRING
-    'broker:' broker=BrokerConnection
+'ValueDisplay' name=ID
+(
+    ('label:' label=STRING)
+    ('topic:' topic=STRING)
+    ('broker:' broker=[MessageBroker])
+    ('position:' position=Placement)
+    ('attribute:' attribute=STRING)
     ('unit:' unit=STRING)?
+)#
+'end'
 ;
 
 AliveDisplay:
-    'name:' name=ID
-    'label:' name=STRING
-    'topic:' topic=STRING
-    'broker:' broker=BrokerConnection
+'AliveDisplay' name=ID
+(
+    'label:' label=STRING
+    ('topic:' topic=STRING)
+    ('broker:' broker=[MessageBroker])
+    ('position:' position=Placement)
     ('timeout:' timeout=INT)?  // ms
+)#
+'end'
 ;
 
 JsonViewer:
 'JsonViewer' name=ID
 (
-    'label:' name=STRING
-    'topic:' topic=STRING
-    'broker:' broker=BrokerConnection
+    ('label:' label=STRING)
+    ('topic:' topic=STRING)
+    ('broker:' broker=[MessageBroker])
+    ('position:' position=Placement)
     ('attribute:' attribute=STRING)?
 )#
 'end'
@@ -99,15 +105,15 @@ JsonViewer:
 Button:
 'Button' name=ID
 (
-    ('name:' name=ID)
-    ('label:' name=STRING)
+    ('label:' label=STRING)
     ('topic:' topic=STRING)
-    ('dynamic:' dynamic=BOOL)
-    ('color:' color=Color)
-    ('background:' bg=Color)
-    ('hover:' hover=Color)
-    ('broker:' broker=BrokerConnection)
-    ('payload:' '-' attribute*=Attribute['-'])
+    ('broker:' broker=[MessageBroker])
+    ('position:' position=Placement)
+    ('dynamic:' dynamic=BOOL)?
+    ('color:' color=Color)?
+    ('background:' bg=Color)?
+    ('hover:' hover=Color)?
+    ('payload:' '-' payload*=Attribute['-'])
 )#
 'end'
 ;
@@ -122,36 +128,43 @@ AlignType:
     'Vertical'
 ;
 
-Buttons:
+ButtonArray:
+'ButtonArray' name=ID
+(
     'name:' name=ID
     'label:' name=STRING
     'alignTxt:' alignTxt=AlignType
     'alignBtns:' alignBtns=AlignType
-    'buttons:' buttons*=Button
+    'buttons:' '-' buttons*=[Button]['-']
+)#
+'end'
 ;
 
 Plot:
-    'name:' name=ID
-    'label:' name=STRING
-    'topic:' topic=STRING
-    'ptype:' ptype=PlotType
-    'attribute:' attribute=STRING
-    'color:' color=Color
-    'smooth:' smooth=BOOL
-    'verticalGrid:' verticalGrid=BOOL
-    'horizontalGrid:' horizontalGrid=BOOL
-    'xAxis:' xAxis=BOOL
-    'yAxis:' yAxis=BOOL
-    'legend:' legend=BOOL
-    'maxValues:' maxValues=INT
-    'legendPosition:' legendPosition=AlignType
-    'broker:' broker=[MessageBroker:FQN]
+'Plot' name=ID
+(
+    ('label:' label=STRING)
+    ('topic:' topic=STRING)
+    ('broker:' broker=[MessageBroker])
+    ('ptype:' ptype=PlotType)
+    ('attribute:' attribute=STRING)
+    ('color:' color=Color)?
+    ('smooth:' smooth=BOOL)?
+    ('verticalGrid:' verticalGrid=BOOL)?
+    ('horizontalGrid:' horizontalGrid=BOOL)?
+    ('xAxis:' xAxis=BOOL)?
+    ('yAxis:' yAxis=BOOL)?
+    ('legend:' legend=BOOL)?
+    ('maxValues:' maxValues=INT)?
+    ('legendPosition:' legendPosition=AlignType)?
+)#
+'end'
 ;
 
 PlotViewer:
-    'name:' name=ID
-    'label:' name=STRING
-
+    ('label:' label=STRING)
+    ('position:' position=Placement)
+    ('plots:' '-' plots*=[Plot]['-'])
 ;
 
 PlotType:
@@ -166,8 +179,10 @@ Highlight:
 
 // TODO
 Color:
-    'Red' |
-    'Blue'
+    'Red'		|
+    'Blue'		|
+	'Yellow'	|
+	'Green'
 ;
 
 MessageBroker:
@@ -176,8 +191,8 @@ MessageBroker:
 
 
 BrokerConnection:
-    'ref' ':' ref=[MessageBroker:FQN]
-    'auth' ':' auth=Authentication
+    ('ref' ':' ref=[MessageBroker:FQN])
+    ('auth' ':' auth=Authentication)?
 ;
 
 

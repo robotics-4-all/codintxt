@@ -3,173 +3,207 @@ from os.path import join
 from textx import language, metamodel_from_file, get_children_of_type, TextXSemanticError
 import pathlib
 import textx.scoping.providers as scoping_providers
-from rich import print
+from rich import print, pretty
 from textx.scoping import ModelRepository, GlobalModelRepository
-from smauto.definitions import MODEL_REPO_PATH
+from codintxt.definitions import MODEL_REPO_PATH
+from typing import Any, Dict, List
+from pydantic import BaseModel
 
-from smauto.lib.automation import (
-    Action,
-    Automation,
-    BoolAction,
-    FloatAction,
-    IntAction,
-    StringAction
-)
-from smauto.lib.types import (
-    Dict, List, Time, Date
-)
-from smauto.lib.broker import (
-    AMQPBroker,
-    Broker,
-    BrokerAuthPlain,
-    MQTTBroker,
-    RedisBroker
-)
-from smauto.lib.entity import (
-    Attribute,
-    BoolAttribute,
-    DictAttribute,
-    Entity,
-    FloatAttribute,
-    IntAttribute,
-    ListAttribute,
-    StringAttribute,
-    TimeAttribute
-)
-
-from smauto.lib.condition import (
-    Condition,
-    ConditionGroup,
-    PrimitiveCondition,
-    AdvancedCondition,
-    NumericCondition,
-    BoolCondition,
-    TimeCondition,
-    StringCondition,
-    DictCondition,
-    ListCondition
-)
-
+pretty.install()
 
 CURRENT_FPATH = pathlib.Path(__file__).parent.resolve()
-
-CUSTOM_CLASSES = [
-    Automation, Entity, Condition, ConditionGroup, PrimitiveCondition,
-    AdvancedCondition, NumericCondition, BoolCondition, StringCondition,
-    ListCondition, DictCondition, TimeCondition,
-    Attribute, IntAttribute, FloatAttribute, TimeAttribute,
-    StringAttribute, BoolAttribute, ListAttribute,
-    DictAttribute, Broker, MQTTBroker, AMQPBroker,
-    RedisBroker, BrokerAuthPlain, Action,
-    IntAction, FloatAction, StringAction, BoolAction,
-    List, Dict, Time, Date
-]
-
-
-ENTITY_BUILDINS = {
-    'system_clock': Entity(
-        None,
-        name='system_clock',
-        etype='sensor',
-        freq=1,
-        topic='system.clock',
-        broker=MQTTBroker(None, name='fake', host='localhost',
-                          port=1883, auth=None),
-        attributes=[
-            TimeAttribute(None, 'time', None)
-        ]
-    )
-}
-
-FakeBroker = """
-MQTT:
-    name: fake_broker
-    host: "localhost"
-    port: 1883
-    auth:
-        username: ""
-        password: ""
-"""
-
-SystemClock = """
-Entity:
-    name: system_clock
-    type: sensor
-    topic: "system.clock"
-    broker: fake_broker
-    attributes:
-        - time: time
-"""
 
 GLOBAL_REPO = GlobalModelRepository()
 
 
-def class_provider(name):
-    classes = dict(map(lambda x: (x.__name__, x), CUSTOM_CLASSES))
-    return classes.get(name)
-
-
-def time_obj_processor(t):
-    if t.hour > 24 or t.hour < 0:
-        raise TextXSemanticError('Time.hours must be in range [0, 24]')
-    if t.minute > 60 or t.minute < 0:
-        raise TextXSemanticError('Time.minutes must be in range [0, 60]')
-    if t.second > 60 or t.second < 0:
-        raise TextXSemanticError('Time.seconds must be in range [0, 60]')
-
-
-def process_time_class(model):
-    types_time = get_children_of_type('Time', model)
-    for t in types_time:
-        if t.hour > 24 or t.hour < 0:
-            raise TextXSemanticError('Time.hours must be in range [0, 24]')
-        if t.minute > 60 or t.minute < 0:
-            raise TextXSemanticError('Time.minutes must be in range [0, 60]')
-        if t.second > 60 or t.second < 0:
-            raise TextXSemanticError('Time.seconds must be in range [0, 60]')
-
-
-def model_proc(model, metamodel):
-    process_time_class(model)
-
-
-def get_metamodel(debug=False):
+def get_metamodel(debug=False) -> Any:
     metamodel = metamodel_from_file(
-        CURRENT_FPATH.joinpath('grammar/smauto.tx'),
-        classes=class_provider,
-        auto_init_attributes=False,
+        CURRENT_FPATH.joinpath('grammar/codin.tx'),
+        auto_init_attributes=True,
         global_repository=GLOBAL_REPO,
         debug=debug
     )
-    # metamodel.register_obj_processors(obj_processors)
-    metamodel.register_model_processor(model_proc)
 
     metamodel.register_scope_providers(
         {
             "*.*": scoping_providers.FQNImportURI(importAs=True),
-            "brokers*": scoping_providers.FQNGlobalRepo(
-                join(MODEL_REPO_PATH, 'broker', 'fake_broker.smauto')
-            ),
-            "entities*": scoping_providers.FQNGlobalRepo(
-                join(MODEL_REPO_PATH, 'entity', 'system_clock.smauto')
-            ),
+            # "entities*": scoping_providers.FQNGlobalRepo(
+            #     join(MODEL_REPO_PATH, 'entity', 'system_clock.smauto')
+            # ),
         }
     )
     return metamodel
 
 
-def get_buildin_models(metamodel):
-    buildin_models = ModelRepository()
-    buildin_models.add_model(metamodel.model_from_str(FakeBroker))
-    buildin_models.add_model(metamodel.model_from_str(SystemClock))
-    return buildin_models
+class Component(BaseModel):
+    ctype: str
+    name: str
+    label: str
+    topic: str
+    broker: str
+    position: Dict[str, Any]
 
 
-def build_model(model_path):
+class Gauge(Component):
+    attribute: str
+    minValue: int
+    maxValue: int
+    leftColor: str = ""
+    rightColor: str = ""
+    levels: int = 10
+    hideTxt: bool = False
+    unit: str = ""
+
+
+class ValueDisplay(Component):
+    attribute: str
+    unit: str = ""
+
+
+class JsonViewer(Component):
+    attribute: str
+
+
+class AliveDisplay(Component):
+    timeout: int
+
+
+class Button(Component):
+    dynamic: bool = False
+    color: str = ''
+    background: str = ''
+    hover: str = ''
+    payload: Dict[str, Any]
+
+
+class Broker(BaseModel):
+    name: str
+    btype: str
+    host: str
+    port: int
+    auth: Dict[str, Any]
+
+
+class CodinTxtModel(BaseModel):
+    brokers: List[Broker]
+    components: List[Any]
+
+
+def build_model(model_path: str, debug: bool = False):
     # Parse model
-    mm = get_metamodel(debug=False)
+    mm = get_metamodel(debug=debug)
     model = mm.model_from_file(model_path)
-    # entities = get_children_of_type('Entity', model)
+    _brokers = []
+    _components = []
+    for broker in model.brokers:
+        br = Broker(
+            name=broker.name,
+            btype=broker.__class__.__name__,
+            host=broker.host,
+            port=broker.port,
+            auth={
+                'username': broker.auth.username,
+                'password': broker.auth.password,
+            }
+        )
+        _brokers.append(br)
+    for component in model.components:
+        if component.__class__.__name__ == 'Gauge':
+            cmp = Gauge(
+                ctype='Gauge',
+                name=component.name,
+                label=component.label,
+                topic=component.topic,
+                broker=component.broker.name,
+                attribute=component.attribute,
+                minValue=component.minValue,
+                maxValue=component.maxValue,
+                leftColor=str(component.leftColor),
+                rightColor=str(component.rightColor),
+                levels=component.levels,
+                hideTxt=component.hideTxt,
+                unit=component.unit,
+                position={
+                    'x': component.position.x,
+                    'y': component.position.y,
+                    'w': component.position.w,
+                    'h': component.position.h,
+                }
+            )
+        elif component.__class__.__name__ == 'ValueDisplay':
+            cmp = ValueDisplay(
+                ctype='ValueDisplay',
+                name=component.name,
+                label=component.label,
+                topic=component.topic,
+                broker=component.broker.name,
+                attribute=component.attribute,
+                unit=component.unit,
+                position={
+                    'x': component.position.x,
+                    'y': component.position.y,
+                    'w': component.position.w,
+                    'h': component.position.h,
+                }
+            )
+        elif component.__class__.__name__ == 'JsonViewer':
+            cmp = JsonViewer(
+                ctype='JsonViewer',
+                name=component.name,
+                label=component.label,
+                topic=component.topic,
+                broker=component.broker.name,
+                attribute=component.attribute,
+                position={
+                    'x': component.position.x,
+                    'y': component.position.y,
+                    'w': component.position.w,
+                    'h': component.position.h,
+                }
+            )
+        elif component.__class__.__name__ == 'AliveDisplay':
+            cmp = AliveDisplay(
+                ctype='AliveDisplay',
+                name=component.name,
+                label=component.label,
+                topic=component.topic,
+                broker=component.broker.name,
+                timeout=component.timeout,
+                position={
+                    'x': component.position.x,
+                    'y': component.position.y,
+                    'w': component.position.w,
+                    'h': component.position.h,
+                }
+            )
+        elif component.__class__.__name__ == 'Button':
+            cmp = Button(
+                ctype='Button',
+                name=component.name,
+                label=component.label,
+                topic=component.topic,
+                broker=component.broker.name,
+                dynamic=component.dynamic,
+                color=str(component.color),
+                background=str(component.bg),
+                hover=str(component.hover),
+                payload={attr.name: attr.default for attr in component.payload},
+                position={
+                    'x': component.position.x,
+                    'y': component.position.y,
+                    'w': component.position.w,
+                    'h': component.position.h,
+                }
+            )
+        else:
+            continue
+        _components.append(cmp)
+    _model = CodinTxtModel(
+        brokers=_brokers,
+        components=_components,
+    )
+    _model_json = _model.model_dump(mode="json")
+    print(_model_json)
     return model
 
 
@@ -179,8 +213,8 @@ def get_model_grammar(model_path):
     return grammar_model
 
 
-@language('smauto', '*.auto')
-def smauto_language():
-    "SmartAutomation (SmAuto) language"
+@language('codintxt', '*.codin')
+def codintxt_language():
+    "Codin Textual DSL"
     mm = get_metamodel()
     return mm
