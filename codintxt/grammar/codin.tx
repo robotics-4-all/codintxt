@@ -65,7 +65,7 @@ LogsDisplay:
     'attribute:' attribute=STRING
     'broker:' broker=BrokerConnection
     ('maxMessages:' maxMsg=INT)?
-    ('highlights:' '-' colorKeys=Highlight['-'])?
+    ('highlights:' '-' colorKeys*=Highlight['-'])?
 ;
 
 ValueDisplay:
@@ -107,7 +107,7 @@ Button:
     ('background:' bg=Color)
     ('hover:' hover=Color)
     ('broker:' broker=BrokerConnection)
-    ('payload:' '-' attribute=Attribute['-'])
+    ('payload:' '-' attribute*=Attribute['-'])
 )#
 'end'
 ;
@@ -119,7 +119,7 @@ AlignType:
     'Top' |
     'Bottom' |
     'Horizontal' |
-    'Vertical' |
+    'Vertical'
 ;
 
 Buttons:
@@ -148,7 +148,7 @@ Plot:
     'broker:' broker=[MessageBroker:FQN]
 ;
 
-PlotView:
+PlotViewer:
     'name:' name=ID
     'label:' name=STRING
 
@@ -233,6 +233,75 @@ RedisBroker:
     'end'
 ;
 
+Attribute:
+    NumericAttribute    |
+    BoolAttribute       |
+    StringAttribute     |
+    TimeAttribute       |
+    ListAttribute       |
+    DictAttribute
+;
+
+NumericAttribute:
+    IntAttribute | FloatAttribute
+;
+
+IntAttribute:
+    name=ID ':' 'int' ('=' default=INT)?
+;
+
+FloatAttribute:
+    name=ID ':' 'float' ('=' default=FLOAT)?
+;
+
+StringAttribute:
+    name=ID ':' 'str' ('=' default=STRING)?
+;
+
+BoolAttribute:
+    name=ID ':' 'bool' ('=' default=BOOL)?
+;
+
+ListAttribute:
+    name=ID ':' 'list' ('=' '[' default*=OBJECT[','] ']')?
+;
+
+DictAttribute:
+    name=ID ':' 'dict' ('=' '{' items*=Attribute[','] '}')?
+;
+
+TimeAttribute:
+    name=ID ':' 'time' ('=' default=Time)?
+;
+
+Time:
+    hour=INT ':' minute=INT (':' second=INT)?
+;
+
+Date: month=INT ':' day=INT ':' year=INT;
+
+// Hours: /[0-2]?[0-9]?/;
+// Minutes: /[0-5][0-9]/;
+
+List:
+    '[' items*=ListItem[','] ']'
+;
+
+ListItem:
+    NUMBER | STRING | BOOL | List | Dict | OBJECT
+;
+
+Dict:
+    '{' items*=DictItem[','] '}'
+;
+
+DictItem:
+    name=STRING ':' value=DictType
+;
+
+DictType:
+    NUMBER | STRING | BOOL | Dict | List | OBJECT
+;
 
 ADDRESS_ID:
 	/([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}/
