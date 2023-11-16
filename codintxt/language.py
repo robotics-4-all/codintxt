@@ -94,6 +94,7 @@ class MQTTBroker(Broker):
 class CodinTxtModel(BaseModel):
     brokers: List[Any]
     components: List[Any]
+    metadata: Dict[str, Any]
 
 
 def model_2_object(model):
@@ -220,17 +221,23 @@ def model_2_object(model):
     _model = CodinTxtModel(
         brokers=_brokers,
         components=_components,
+        metadata={
+            'name': model.metadata.name,
+            'token': model.metadata.token,
+        }
     )
     return _model
 
 
 def model_2_codin(model) -> Dict[str, Any]:
     _model = model_2_object(model)
-    # print(_model)
+    _brokers = [br.dict() for br in _model.brokers]
     _json: Dict[str, Any] = model_2_json(model)
     codin_json: Dict[str, Any] = {
         "layout": [],
-        "items": {}
+        "items": {},
+        "sources": _brokers,
+        "metadata": _model.metadata,
     }
 
     colors = {
@@ -364,12 +371,14 @@ def build_model(model_path: str, debug: bool = False):
     model = mm.model_from_file(model_path)
     return model
 
+
 def validate_model_file(model_path: str):
     _model = build_model(model_path)
     _codin_json = model_2_codin(_model)
     overlap = check_overlapping(_codin_json)
     if overlap:
         raise ValueError('Overlapping of visual components!!')
+
 
 def get_model_grammar(model_path):
     mm = get_metamodel()
