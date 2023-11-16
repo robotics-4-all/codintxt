@@ -228,7 +228,7 @@ async def gen_codin(gen_auto_model: TransformationModel = Body(...),
     resp = {
         'status': 200,
         'message': '',
-        'codin_json': ''
+        'code': ''
     }
     model =  gen_auto_model.model
     u_id = uuid.uuid4().hex[0:8]

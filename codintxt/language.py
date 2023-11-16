@@ -227,9 +227,134 @@ def model_2_object(model):
 def model_2_codin(model) -> Dict[str, Any]:
     _model = model_2_object(model)
     # print(_model)
-    _json: Dict[str, Any] = {}
-    # TODO: Implement the transformation to Codin json
-    return _json
+    _json: Dict[str, Any] = model_2_json(model)
+    codin_json: Dict[str, Any] = {
+        "layout": [],
+        "items": {}
+    }
+
+    colors = {
+        'Red': "#ff0000",
+        'Blue': "#00ff00",
+        'Green': "#00ff00"
+    }
+
+    # Get the brokers
+    brokers = {}
+    for b in _json['brokers']:
+        brokers[b['name']] = b
+
+    # Get the components
+    current_id = 0
+    for c in _json["components"]:
+        current_id += 1
+        str_id = str(current_id)
+
+        # Handle the layout
+        l = {
+            "i": str_id,
+            "x": c['position']['x'],
+            "y": c['position']['y'],
+            "w": c['position']['w'],
+            "h": c['position']['h'],
+            "minW": 1,
+            "minH": 1,
+            "moved": False,
+            "static": False,
+        }
+        codin_json['layout'].append(l)
+
+        # Handle the config
+        if c['ctype'] == "Gauge":
+            config = {
+                "type": "gauge",
+                "name": c["name"],
+                "source": c["broker"], # check this for duplicates
+                "topic": c["topic"],
+                "variable": c["attribute"],
+                "minValue": c["minValue"],
+                "maxValue": c["maxValue"],
+                "leftColor": colors[c["leftColor"]],
+                "rightColor": colors[c["rightColor"]],
+                "levels": c["levels"],
+                "hideText": c['hideTxt'],
+                "unit": c['unit']
+            }
+            codin_json["items"][str_id] = config
+        elif c['ctype'] == "ValueDisplay":
+            config = {
+                "type": "value",
+                "name": c["name"],
+                "source": c["broker"],
+                "topic": c["topic"],
+                "variable": c["attribute"],
+                "unit": "%"
+            }
+            codin_json["items"][str_id] = config
+        elif c['ctype'] == "JsonViewer":
+            config = {
+                "type": "json",
+                "name": c["name"],
+                "source": c["broker"],
+                "topic": c["topic"],
+                "variable": c["attribute"]
+            }
+            codin_json["items"][str_id] = config
+        elif c['ctype'] == "AliveDisplay":
+            config = {
+                "type": "alive",
+                "name": c["name"],
+                "source": c["broker"],
+                "topic": c['topic'],
+                "timeout": c['timeout']
+            }
+            codin_json["items"][str_id] = config
+        elif c['ctype'] == "Button":
+            config = {
+                "type": "buttons",
+                "name": "Buttons",
+                "alignText": "center",
+                "buttonsAlign": "horizontal",
+                "texts": [c['name']],
+                "sources": [c["broker"]],
+                "topics": [c['topic']],
+                "payloads": [c['payload']],
+                "isDynamic": [c['dynamic']],
+                "colors": ["white" if c['color'] is None else c['color']],
+                "backgrounds": ["#FF9D66" if c['background'] is None else c['background']],
+                "backgroundsHover": ["#ff7e33" if c['hover'] is None else c['hover']]
+            }
+            codin_json["items"][str_id] = config
+
+    overlap = check_overlapping(codin_json)
+    if overlap:
+        raise ValueError('Visual Component Overlapping issue!')
+    return codin_json
+
+
+def check_overlapping(codin_json: Dict[str, Any]):
+    # Validation
+    occupancy = {}
+    failed = False
+    msg = ""
+    for element in codin_json["layout"]:
+        for i in range(element["x"], element["x"] + element["w"] - 1):
+            for j in range(element["y"], element["y"] + element["h"] - 1):
+                if (i,j) in occupancy:
+                    msg = f"Conflict between elements {element['i']} and {occupancy[(i,j)]} in place {(i,j)}"
+                    failed = True
+                    break
+                else:
+                    occupancy[(i,j)] = element['i']
+            if failed:
+                break
+        if failed:
+            break
+    if failed == False:
+        print("All good!")
+    else:
+        print("Overlapping issues!!")
+    return failed
 
 
 def model_2_json(model) -> Dict[str, Any]:
