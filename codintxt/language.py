@@ -350,10 +350,6 @@ def check_overlapping(codin_json: Dict[str, Any]):
                 break
         if failed:
             break
-    if failed == False:
-        print("All good!")
-    else:
-        print("Overlapping issues!!")
     return failed
 
 
@@ -368,6 +364,12 @@ def build_model(model_path: str, debug: bool = False):
     model = mm.model_from_file(model_path)
     return model
 
+def validate_model_file(model_path: str):
+    _model = build_model(model_path)
+    _codin_json = model_2_codin(_model)
+    overlap = check_overlapping(_codin_json)
+    if overlap:
+        raise ValueError('Overlapping of visual components!!')
 
 def get_model_grammar(model_path):
     mm = get_metamodel()

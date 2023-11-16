@@ -13,7 +13,10 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 
-from codintxt.language import build_model, model_2_codin, model_2_json
+from codintxt.language import (
+    build_model, model_2_codin, model_2_json,
+    validate_model_file
+)
 
 API_KEY = os.getenv("API_KEY", "API_KEY")
 
@@ -78,7 +81,7 @@ async def validate(model: ValidationModel,
     with open(fpath, 'w') as f:
         f.write(text)
     try:
-        model = build_model(fpath)
+        validate_model_file(fpath)
         print('Model validation success!!')
         resp['message'] = 'Model validation success'
     except Exception as e:
