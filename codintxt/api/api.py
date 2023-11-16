@@ -248,13 +248,13 @@ async def gen_codin(gen_auto_model: TransformationModel = Body(...),
         model = build_model(model_path)
         codin_json = model_2_codin(model)
         resp['message'] = 'Codintxt-2-CodinJson Transformation success'
-        resp['codin_json'] = codin_json
+        resp['code'] = codin_json
     except Exception as e:
         print(e)
         resp['status'] = 404
         resp['message'] = str(e)
         raise HTTPException(status_code=400,
-                            detail=f"Codintxt.Transformation error: {e}")
+                            detail=f"Codintxt.Transformation error: {str(e)}")
     return resp
 
 
