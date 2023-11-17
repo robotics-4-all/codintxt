@@ -20,16 +20,13 @@ def get_metamodel(debug=False) -> Any:
     metamodel = metamodel_from_file(
         CURRENT_FPATH.joinpath('grammar/codin.tx'),
         auto_init_attributes=True,
-        global_repository=GLOBAL_REPO,
+        # global_repository=GLOBAL_REPO,
         debug=debug
     )
 
     metamodel.register_scope_providers(
         {
             "*.*": scoping_providers.FQNImportURI(importAs=True),
-            # "entities*": scoping_providers.FQNGlobalRepo(
-            #     join(MODEL_REPO_PATH, 'entity', 'system_clock.smauto')
-            # ),
         }
     )
     return metamodel
