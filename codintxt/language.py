@@ -61,11 +61,11 @@ class ValueDisplay(Component):
 
 
 class JsonViewer(Component):
-    attribute: str
+    attribute: str = ""
 
 
 class AliveDisplay(Component):
-    timeout: int
+    timeout: int = 60
 
 
 class Button(Component):
@@ -133,7 +133,7 @@ def model_2_object(model):
                 ctype='Gauge',
                 name=component.name,
                 label=component.label,
-                topic=component.topic,
+                topic=component.topic.replace('.', '/'),
                 broker=component.broker.name,
                 attribute=component.attribute,
                 minValue=component.minValue,
@@ -155,7 +155,7 @@ def model_2_object(model):
                 ctype='ValueDisplay',
                 name=component.name,
                 label=component.label,
-                topic=component.topic,
+                topic=component.topic.replace('.', '/'),
                 broker=component.broker.name,
                 attribute=component.attribute,
                 unit=component.unit,
@@ -171,7 +171,7 @@ def model_2_object(model):
                 ctype='JsonViewer',
                 name=component.name,
                 label=component.label,
-                topic=component.topic,
+                topic=component.topic.replace('.', '/'),
                 broker=component.broker.name,
                 attribute=component.attribute,
                 position={
@@ -186,7 +186,7 @@ def model_2_object(model):
                 ctype='AliveDisplay',
                 name=component.name,
                 label=component.label,
-                topic=component.topic,
+                topic=component.topic.replace('.', '/'),
                 broker=component.broker.name,
                 timeout=component.timeout,
                 position={
@@ -201,7 +201,7 @@ def model_2_object(model):
                 ctype='Button',
                 name=component.name,
                 label=component.label,
-                topic=component.topic,
+                topic=component.topic.replace('.', '/'),
                 broker=component.broker.name,
                 dynamic=component.dynamic,
                 color=str(component.color),
