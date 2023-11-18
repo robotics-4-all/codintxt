@@ -11,6 +11,7 @@ Metadata:
         ('name:' name=STRING)
         ('description:' description=STRING)?
         ('author:' author=STRING)?
+        ('email:' email=STRING)?
         ('token:' token=STRING)?
     )#
     'end'
@@ -57,10 +58,13 @@ Gauge:
 LogsDisplay:
 'LogsDisplay' name=ID
 (
+    ('label:' label=STRING)
+    ('topic:' topic=STRING)
     ('broker:' broker=[MessageBroker])
     ('attribute:' attribute=STRING)
     ('maxMessages:' maxMsg=INT)?
     ('highlights:' '-' colorKeys*=Highlight['-'])?
+    ('position:' position=Placement)
 )#
 'end'
 ;
