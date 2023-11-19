@@ -42,11 +42,11 @@ class Component(BaseModel):
 
 
 class Gauge(Component):
-    attribute: str
-    minValue: int
-    maxValue: int
-    leftColor: str = ""
-    rightColor: str = ""
+    attribute: str = ""
+    minValue: int = 0
+    maxValue: int = 100
+    leftColor: str = "blue"
+    rightColor: str = "red"
     levels: int = 10
     hideTxt: bool = False
     unit: str = ""
@@ -63,6 +63,20 @@ class JsonViewer(Component):
 
 class AliveDisplay(Component):
     timeout: int = 60
+
+
+class LogsDisplay(Component):
+    attribute: str = ""
+    maxMsg: int = -1
+    highlights: List[Dict[str, Any]] = [
+        {'key': 'Error', 'color': 'red'},
+        {'key': 'error', 'color': 'red'},
+        {'key': 'Exception', 'color': 'red'},
+        {'key': 'exception', 'color': 'red'},
+        {'key': 'failed', 'color': 'red'},
+        {'key': 'Warning', 'color': 'yellow'},
+        {'key': 'warning', 'color': 'yellow'},
+    ]
 
 
 class Button(Component):
@@ -184,6 +198,26 @@ def model_2_object(model):
                     'h': component.position.h,
                 }
             )
+        elif component.__class__.__name__ == 'LogsDisplay':
+            cmp = LogsDisplay(
+                ctype='LogsDisplay',
+                name=component.name,
+                label=component.label,
+                topic=component.topic.replace('.', '/'),
+                broker=component.broker.name,
+                attribute=component.attribute,
+                maxMsg=component.maxMsg,
+                position={
+                    'x': component.position.x,
+                    'y': component.position.y,
+                    'w': component.position.w,
+                    'h': component.position.h,
+                }
+            )
+            if len(component.colorKeys):
+                cmp.highlights = [
+                    {hl.key: str(hl.color)} for hl in component.colorKeys
+                ]
         elif component.__class__.__name__ == 'AliveDisplay':
             cmp = AliveDisplay(
                 ctype='AliveDisplay',
@@ -325,7 +359,14 @@ def model_2_codin(model) -> Dict[str, Any]:
                 "name": c["name"],
                 "source": c["broker"],
                 "topic": c["topic"],
-                "variable": c["attribute"]
+                "variable": c["attribute"],
+                "maxMessages": c["maxMsg"],
+                "colorKeys": [
+                    hl['key'] for hl in c["highlights"]
+                ],
+                "colorValues": [
+                    hl['color'] for hl in c["highlights"]
+                ],
             }
             codin_json["items"][str_id] = config
         elif c['ctype'] == "AliveDisplay":

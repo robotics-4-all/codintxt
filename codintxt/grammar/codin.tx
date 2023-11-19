@@ -189,9 +189,15 @@ Highlight:
 // TODO
 Color:
     'Red'		|
+    'red'		|
     'Blue'		|
+    'blue'		|
 	'Yellow'	|
-	'Green'
+	'yellow'	|
+	'Green'     |
+	'green'     |
+	'Cyan'      |
+	'cyan'
 ;
 
 MessageBroker:
