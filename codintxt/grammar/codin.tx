@@ -32,6 +32,7 @@ VisualComponent:
     AliveDisplay    |
     JsonViewer      |
     PlotView        |
+    Plot            |
     Button          |
     ButtonGroup
 ;

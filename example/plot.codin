@@ -1,0 +1,33 @@
+Metadata
+    name: "TestModel"
+    token: "1234"
+end
+
+Broker<MQTT> CloudMQTT
+    host: "locsys.issel.ee.auth.gr"
+    port: 1883  // Change this accordingly
+    webPath: "/mqtt"
+    webPort: 8883
+    auth:
+        username: "r4a"
+        password: "r4a123$"
+end
+
+Plot HumidityPlot
+    label: "Humidity"
+    topic: "bedroom.humidity"
+    broker: CloudMQTT
+    ptype: Line
+    attribute: "humidity"
+end
+
+PlotView MyPlots
+    label: "Env Sensor Plots"
+    plots:
+        - HumidityPlot
+    position:
+        x: 0
+        y: 0
+        width: 8
+        height: 8
+end
