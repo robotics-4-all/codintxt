@@ -31,8 +31,9 @@ VisualComponent:
     ValueDisplay    |
     AliveDisplay    |
     JsonViewer      |
-    PlotViewer      |
-    Button
+    PlotView        |
+    Button          |
+    ButtonGroup
 ;
 
 
@@ -85,7 +86,7 @@ ValueDisplay:
 AliveDisplay:
 'AliveDisplay' name=ID
 (
-    'label:' label=STRING
+    ('label:' label=STRING)
     ('topic:' topic=STRING)
     ('broker:' broker=[MessageBroker])
     ('position:' position=Placement)
@@ -132,14 +133,13 @@ AlignType:
     'Vertical'
 ;
 
-ButtonArray:
-'ButtonArray' name=ID
+ButtonGroup:
+'ButtonGroup' name=ID
 (
-    'name:' name=ID
-    'label:' name=STRING
-    'alignTxt:' alignTxt=AlignType
-    'alignBtns:' alignBtns=AlignType
-    'buttons:' '-' buttons*=[Button]['-']
+    ('label:' label=STRING)
+    ('alignTxt:' alignTxt=AlignType)?
+    ('alignBtns:' alignBtns=AlignType)?
+    ('buttons:' '-' buttons*=[Button]['-'])
 )#
 'end'
 ;
@@ -165,10 +165,14 @@ Plot:
 'end'
 ;
 
-PlotViewer:
+PlotView:
+'PlotView' name=ID
+(
     ('label:' label=STRING)
     ('position:' position=Placement)
     ('plots:' '-' plots*=[Plot]['-'])
+)#
+'end'
 ;
 
 PlotType:
