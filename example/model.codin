@@ -17,11 +17,14 @@ Button Btn1
     label: "Button1"
     topic: "actuators.relay_1"
     broker: CloudMQTT
-    position:
-        x: 0
-        y: 0
-        width: 4
-        height: 4
+    payload:
+        - state: int = 1
+end
+
+Button Btn2
+    label: "Button2"
+    topic: "actuators.relay_2"
+    broker: CloudMQTT
     payload:
         - state: int = 1
 end
@@ -32,4 +35,10 @@ ButtonGroup Btn_Group_A
     alignBtns: Horizontal
     buttons:
         - Btn1
+        - Btn2
+    position:
+        x: 0
+        y: 0
+        width: 4
+        height: 4
 end

@@ -113,7 +113,6 @@ Button:
     ('label:' label=STRING)
     ('topic:' topic=STRING)
     ('broker:' broker=[MessageBroker])
-    ('position:' position=Placement)
     ('dynamic:' dynamic=BOOL)?
     ('color:' color=Color)?
     ('background:' bg=Color)?
@@ -140,6 +139,7 @@ ButtonGroup:
     ('alignTxt:' alignTxt=AlignType)?
     ('alignBtns:' alignBtns=AlignType)?
     ('buttons:' '-' buttons*=[Button]['-'])
+    ('position:' position=Placement)
 )#
 'end'
 ;
