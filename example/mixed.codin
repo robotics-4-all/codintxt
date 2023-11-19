@@ -78,16 +78,3 @@ AliveDisplay AV1
         width: 10
         height: 10
 end
-
-Button Btn1
-    label: "Button1"
-    topic: "actuators.relay_1"
-    broker: BrokerA
-    position:
-        x: 40
-        y: 40
-        width: 10
-        height: 10
-    payload:
-        - state: int = 1
-end

@@ -274,31 +274,31 @@ NumericAttribute:
 ;
 
 IntAttribute:
-    name=ID ':' 'int' ('=' default=INT)?
+    name=ID ':' type='int' ('=' default=INT)?
 ;
 
 FloatAttribute:
-    name=ID ':' 'float' ('=' default=FLOAT)?
+    name=ID ':' type='float' ('=' default=FLOAT)?
 ;
 
 StringAttribute:
-    name=ID ':' 'str' ('=' default=STRING)?
+    name=ID ':' type='str' ('=' default=STRING)?
 ;
 
 BoolAttribute:
-    name=ID ':' 'bool' ('=' default=BOOL)?
+    name=ID ':' type='bool' ('=' default=BOOL)?
 ;
 
 ListAttribute:
-    name=ID ':' 'list' ('=' '[' default*=OBJECT[','] ']')?
+    name=ID ':' type='list' ('=' '[' default*=OBJECT[','] ']')?
 ;
 
 DictAttribute:
-    name=ID ':' 'dict' ('=' '{' items*=Attribute[','] '}')?
+    name=ID ':' type='dict' ('=' '{' default*=Attribute[','] '}')?
 ;
 
 TimeAttribute:
-    name=ID ':' 'time' ('=' default=Time)?
+    name=ID ':' type='time' ('=' default=Time)?
 ;
 
 Time:
