@@ -78,3 +78,15 @@ AliveDisplay AV1
         width: 10
         height: 10
 end
+
+LogsDisplay LD1
+    label: "MyLogsDisplay"
+    topic: "smauto.logs"
+    broker: BrokerA
+    attribute: "msg"
+    position:
+        x: 40
+        y: 40
+        width: 10
+        height: 10
+end

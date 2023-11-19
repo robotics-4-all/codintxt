@@ -35,6 +35,7 @@ def generate(ctx, model_path, generator):
     if generator == 'codin':
         model = build_model(model_path)
         _model = model_2_codin(model)
+        print(_model)
         filepath = f'codin-{model.metadata.name}.json'
         with open(filepath, 'w') as fp:
             json.dump(_model, fp)

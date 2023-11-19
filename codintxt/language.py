@@ -35,9 +35,9 @@ def get_metamodel(debug=False) -> Any:
 class Component(BaseModel):
     ctype: str
     name: str
-    label: str
-    topic: str
-    broker: str
+    label: str = ""
+    topic: str = ""
+    broker: str = ""
     position: Dict[str, Any]
 
 
@@ -67,10 +67,16 @@ class AliveDisplay(Component):
 
 class Button(Component):
     dynamic: bool = False
-    color: str = ''
-    background: str = ''
-    hover: str = ''
+    color: str = 'white'
+    background: str = '#FF9D66'
+    hover: str = '#ff7e33'
     payload: Dict[str, Any]
+
+
+class ButtonGroup(Component):
+    alignTxt: str = ''
+    alignBtns: str = ''
+    buttons: List[Button]
 
 
 class Broker(BaseModel):
@@ -193,18 +199,27 @@ def model_2_object(model):
                     'h': component.position.h,
                 }
             )
-        elif component.__class__.__name__ == 'Button':
-            cmp = Button(
+        elif component.__class__.__name__ == 'ButtonGroup':
+            btns = [Button(
                 ctype='Button',
+                name=btn.name,
+                label=btn.label,
+                topic=btn.topic.replace('.', '/'),
+                broker=btn.broker.name,
+                dynamic=btn.dynamic,
+                color=str(btn.color),
+                background=str(btn.bg),
+                hover=str(btn.hover),
+                payload={attr.name: attr.default for attr in btn.payload},
+                position={'x': 0, 'y': 0, 'w': 0, 'h': 0 }
+            ) for btn in component.buttons]
+            cmp = ButtonGroup(
+                ctype='ButtonGroup',
                 name=component.name,
                 label=component.label,
-                topic=component.topic.replace('.', '/'),
-                broker=component.broker.name,
-                dynamic=component.dynamic,
-                color=str(component.color),
-                background=str(component.bg),
-                hover=str(component.hover),
-                payload={attr.name: attr.default for attr in component.payload},
+                alignTxt=component.alignTxt,
+                alignBtns=component.alignBtns,
+                buttons=btns,
                 position={
                     'x': component.position.x,
                     'y': component.position.y,
@@ -304,6 +319,15 @@ def model_2_codin(model) -> Dict[str, Any]:
                 "variable": c["attribute"]
             }
             codin_json["items"][str_id] = config
+        elif c['ctype'] == "LogsDisplay":
+            config = {
+                "type": "logs",
+                "name": c["name"],
+                "source": c["broker"],
+                "topic": c["topic"],
+                "variable": c["attribute"]
+            }
+            codin_json["items"][str_id] = config
         elif c['ctype'] == "AliveDisplay":
             config = {
                 "type": "alive",
@@ -313,20 +337,39 @@ def model_2_codin(model) -> Dict[str, Any]:
                 "timeout": c['timeout']
             }
             codin_json["items"][str_id] = config
-        elif c['ctype'] == "Button":
+        elif c['ctype'] == "ButtonGroup":
             config = {
                 "type": "buttons",
-                "name": "Buttons",
-                "alignText": "center",
-                "buttonsAlign": "horizontal",
-                "texts": [c['name']],
-                "sources": [c["broker"]],
-                "topics": [c['topic']],
-                "payloads": [c['payload']],
-                "isDynamic": [c['dynamic']],
-                "colors": ["white" if c['color'] is None else c['color']],
-                "backgrounds": ["#FF9D66" if c['background'] is None else c['background']],
-                "backgroundsHover": ["#ff7e33" if c['hover'] is None else c['hover']]
+                "name": c['name'],
+                "alignText": c["alignTxt"],
+                "buttonsAlign": c["alignBtns"],
+                "texts": [
+                    btn['name'] for btn in c['buttons']
+                ],
+                "sources": [
+                    btn["broker"] for btn in c['buttons']
+                ],
+                "topics": [
+                    btn['topic'] for btn in c['buttons']
+                ],
+                "payloads": [
+                    btn['payload'] for btn in c['buttons']
+                ],
+                "isDynamic": [
+                    btn['dynamic'] for btn in c['buttons']
+                ],
+                "colors": [
+                    "white" if btn['color'] in (None, "", "None") else btn['color'] \
+                        for btn in c['buttons']
+                ],
+                "backgrounds": [
+                    "#FF9D66" if btn['background'] in (None, "", "None") else \
+                        btn['background'] for btn in c['buttons']
+                ],
+                "backgroundsHover": [
+                    "#ff7e33" if btn['hover'] in (None, "", "None")  else btn['hover'] \
+                        for btn in c['buttons']
+                ]
             }
             codin_json["items"][str_id] = config
 
@@ -359,7 +402,7 @@ def check_overlapping(codin_json: Dict[str, Any]):
 
 def model_2_json(model) -> Dict[str, Any]:
     _model = model_2_object(model)
-    return _model.dict(exclude_unset=True)
+    return _model.model_dump()
 
 
 def build_model(model_path: str, debug: bool = False):

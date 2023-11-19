@@ -108,6 +108,16 @@ JsonViewer:
 'end'
 ;
 
+AlignType:
+    'Center' |
+    'Left' |
+    'Right' |
+    'Top' |
+    'Bottom' |
+    'Horizontal' |
+    'Vertical'
+;
+
 Button:
 'Button' name=ID
 (
@@ -121,16 +131,6 @@ Button:
     ('payload:' '-' payload*=Attribute['-'])
 )#
 'end'
-;
-
-AlignType:
-    'Center' |
-    'Left' |
-    'Right' |
-    'Top' |
-    'Bottom' |
-    'Horizontal' |
-    'Vertical'
 ;
 
 ButtonGroup:
