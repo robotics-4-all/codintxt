@@ -244,7 +244,7 @@ def model_2_object(model):
                 color=str(btn.color),
                 background=str(btn.bg),
                 hover=str(btn.hover),
-                payload=str({attr.name: attr.default for attr in btn.payload}),
+                payload={attr.name: attr.default for attr in btn.payload},
                 position={'x': 0, 'y': 0, 'w': 0, 'h': 0 }
             ) for btn in component.buttons]
             cmp = ButtonGroup(
@@ -394,7 +394,7 @@ def model_2_codin(model) -> Dict[str, Any]:
                     btn['topic'] for btn in c['buttons']
                 ],
                 "payloads": [
-                    btn['payload'] for btn in c['buttons']
+                   str(btn['payload']) for btn in c['buttons']
                 ],
                 "isDynamic": [
                     btn['dynamic'] for btn in c['buttons']
