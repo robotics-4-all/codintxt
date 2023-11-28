@@ -13,10 +13,9 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 
-from codintxt.language import (
-    build_model, model_2_codin, model_2_json,
-    validate_model_file
-)
+from codintxt.language import build_model
+from codintxt.m2t import model_2_codin, model_2_json
+from codintxt.validation import validate_model_file
 
 API_KEY = os.getenv("API_KEY", "API_KEY")
 
@@ -27,6 +26,7 @@ api_keys = [
 api = FastAPI()
 
 api_key_header = APIKeyHeader(name="X-API-Key")
+
 
 def get_api_key(api_key_header: str = Security(api_key_header)) -> str:
     if api_key_header in api_keys:

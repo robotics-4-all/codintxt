@@ -3,7 +3,9 @@ import os
 from rich import print, pretty
 import json
 
-from codintxt.language import build_model, model_2_codin, model_2_json
+from codintxt.language import build_model
+from codintxt.m2t import model_2_codin, model_2_json
+from codintxt.validation import validate_model_file
 
 pretty.install()
 
@@ -23,7 +25,7 @@ def cli(ctx):
 @click.pass_context
 @click.argument('model_path')
 def validate(ctx, model_path):
-    model = build_model(model_path)
+    model = validate_model_file(model_path)
     print('[*] Model validation success!!')
 
 
