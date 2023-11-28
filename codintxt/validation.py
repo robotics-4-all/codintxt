@@ -8,4 +8,4 @@ def validate_model_file(model_path: str):
     _codin_json = model_2_codin(_model)
     overlap = check_overlapping(_codin_json)
     if overlap:
-        raise TextXSemanticError('Overlapping of visual components!!')
+        raise TextXSemanticError("Overlapping of visual components!!")

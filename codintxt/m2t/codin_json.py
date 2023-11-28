@@ -45,27 +45,27 @@ class LogsDisplay(Component):
     attribute: str = ""
     maxMsg: int = -1
     highlights: List[Dict[str, Any]] = [
-        {'key': 'Error', 'color': 'red'},
-        {'key': 'error', 'color': 'red'},
-        {'key': 'Exception', 'color': 'red'},
-        {'key': 'exception', 'color': 'red'},
-        {'key': 'failed', 'color': 'red'},
-        {'key': 'Warning', 'color': 'yellow'},
-        {'key': 'warning', 'color': 'yellow'},
+        {"key": "Error", "color": "red"},
+        {"key": "error", "color": "red"},
+        {"key": "Exception", "color": "red"},
+        {"key": "exception", "color": "red"},
+        {"key": "failed", "color": "red"},
+        {"key": "Warning", "color": "yellow"},
+        {"key": "warning", "color": "yellow"},
     ]
 
 
 class Button(Component):
     dynamic: bool = True
-    color: str = 'white'
-    background: str = '#FF9D66'
-    hover: str = '#ff7e33'
+    color: str = "white"
+    background: str = "#FF9D66"
+    hover: str = "#ff7e33"
     payload: Dict[str, Any]
 
 
 class ButtonGroup(Component):
-    alignTxt: str = ''
-    alignBtns: str = ''
+    alignTxt: str = ""
+    alignBtns: str = ""
     buttons: List[Button]
 
 
@@ -79,8 +79,8 @@ class Broker(BaseModel):
 
 # Child class does not serialize. Workaround to use the BaseModel
 class MQTTBroker(Broker):
-    basePath: Optional[str] = ''
-    webPath: Optional[str] = '/mqtt'
+    basePath: Optional[str] = ""
+    webPath: Optional[str] = "/mqtt"
     webPort: Optional[int] = 8883
 
 
@@ -94,7 +94,7 @@ def model_2_object(model):
     _brokers = []
     _components = []
     for broker in model.brokers:
-        if broker.__class__.__name__ == 'MQTTBroker':
+        if broker.__class__.__name__ == "MQTTBroker":
             br = MQTTBroker(
                 name=broker.name,
                 btype=broker.__class__.__name__,
@@ -104,9 +104,9 @@ def model_2_object(model):
                 webPath=broker.webPath,
                 webPort=broker.webPort,
                 auth={
-                    'username': broker.auth.username,
-                    'password': broker.auth.password,
-                }
+                    "username": broker.auth.username,
+                    "password": broker.auth.password,
+                },
             )
         else:
             br = Broker(
@@ -115,18 +115,18 @@ def model_2_object(model):
                 host=broker.host,
                 port=broker.port,
                 auth={
-                    'username': broker.auth.username,
-                    'password': broker.auth.password,
-                }
+                    "username": broker.auth.username,
+                    "password": broker.auth.password,
+                },
             )
         _brokers.append(br)
     for component in model.components:
-        if component.__class__.__name__ == 'Gauge':
+        if component.__class__.__name__ == "Gauge":
             cmp = Gauge(
-                ctype='Gauge',
+                ctype="Gauge",
                 name=component.name,
                 label=component.label,
-                topic=component.topic.replace('.', '/'),
+                topic=component.topic.replace(".", "/"),
                 broker=component.broker.name,
                 attribute=component.attribute,
                 minValue=component.minValue,
@@ -137,105 +137,106 @@ def model_2_object(model):
                 hideTxt=component.hideTxt,
                 unit=component.unit,
                 position={
-                    'x': component.position.x,
-                    'y': component.position.y,
-                    'w': component.position.w,
-                    'h': component.position.h,
-                }
+                    "x": component.position.x,
+                    "y": component.position.y,
+                    "w": component.position.w,
+                    "h": component.position.h,
+                },
             )
-        elif component.__class__.__name__ == 'ValueDisplay':
+        elif component.__class__.__name__ == "ValueDisplay":
             cmp = ValueDisplay(
-                ctype='ValueDisplay',
+                ctype="ValueDisplay",
                 name=component.name,
                 label=component.label,
-                topic=component.topic.replace('.', '/'),
+                topic=component.topic.replace(".", "/"),
                 broker=component.broker.name,
                 attribute=component.attribute,
                 unit=component.unit,
                 position={
-                    'x': component.position.x,
-                    'y': component.position.y,
-                    'w': component.position.w,
-                    'h': component.position.h,
-                }
+                    "x": component.position.x,
+                    "y": component.position.y,
+                    "w": component.position.w,
+                    "h": component.position.h,
+                },
             )
-        elif component.__class__.__name__ == 'JsonViewer':
+        elif component.__class__.__name__ == "JsonViewer":
             cmp = JsonViewer(
-                ctype='JsonViewer',
+                ctype="JsonViewer",
                 name=component.name,
                 label=component.label,
-                topic=component.topic.replace('.', '/'),
+                topic=component.topic.replace(".", "/"),
                 broker=component.broker.name,
                 attribute=component.attribute,
                 position={
-                    'x': component.position.x,
-                    'y': component.position.y,
-                    'w': component.position.w,
-                    'h': component.position.h,
-                }
+                    "x": component.position.x,
+                    "y": component.position.y,
+                    "w": component.position.w,
+                    "h": component.position.h,
+                },
             )
-        elif component.__class__.__name__ == 'LogsDisplay':
+        elif component.__class__.__name__ == "LogsDisplay":
             cmp = LogsDisplay(
-                ctype='LogsDisplay',
+                ctype="LogsDisplay",
                 name=component.name,
                 label=component.label,
-                topic=component.topic.replace('.', '/'),
+                topic=component.topic.replace(".", "/"),
                 broker=component.broker.name,
                 attribute=component.attribute,
                 maxMsg=component.maxMsg,
                 position={
-                    'x': component.position.x,
-                    'y': component.position.y,
-                    'w': component.position.w,
-                    'h': component.position.h,
-                }
+                    "x": component.position.x,
+                    "y": component.position.y,
+                    "w": component.position.w,
+                    "h": component.position.h,
+                },
             )
             if len(component.colorKeys):
-                cmp.highlights = [
-                    {hl.key: str(hl.color)} for hl in component.colorKeys
-                ]
-        elif component.__class__.__name__ == 'AliveDisplay':
+                cmp.highlights = [{hl.key: str(hl.color)} for hl in component.colorKeys]
+        elif component.__class__.__name__ == "AliveDisplay":
             cmp = AliveDisplay(
-                ctype='AliveDisplay',
+                ctype="AliveDisplay",
                 name=component.name,
                 label=component.label,
-                topic=component.topic.replace('.', '/'),
+                topic=component.topic.replace(".", "/"),
                 broker=component.broker.name,
                 timeout=component.timeout,
                 position={
-                    'x': component.position.x,
-                    'y': component.position.y,
-                    'w': component.position.w,
-                    'h': component.position.h,
-                }
+                    "x": component.position.x,
+                    "y": component.position.y,
+                    "w": component.position.w,
+                    "h": component.position.h,
+                },
             )
-        elif component.__class__.__name__ == 'ButtonGroup':
-            btns = [Button(
-                ctype='Button',
-                name=btn.name,
-                label=btn.label,
-                topic=btn.topic.replace('.', '/'),
-                broker=btn.broker.name,
-                dynamic=btn.dynamic,
-                color=str(btn.color),
-                background=str(btn.bg),
-                hover=str(btn.hover),
-                payload={attr.name: attr.default for attr in btn.payload},
-                position={'x': 0, 'y': 0, 'w': 0, 'h': 0 }
-            ) for btn in component.buttons]
+        elif component.__class__.__name__ == "ButtonGroup":
+            btns = [
+                Button(
+                    ctype="Button",
+                    name=btn.name,
+                    label=btn.label,
+                    topic=btn.topic.replace(".", "/"),
+                    broker=btn.broker.name,
+                    dynamic=btn.dynamic,
+                    color=str(btn.color),
+                    background=str(btn.bg),
+                    hover=str(btn.hover),
+                    payload={attr.name: attr.default for attr in btn.payload},
+                    position={"x": 0, "y": 0, "w": 0, "h": 0},
+                )
+                for btn in component.buttons
+            ]
             cmp = ButtonGroup(
-                ctype='ButtonGroup',
+                ctype="ButtonGroup",
                 name=component.name,
                 label=component.label,
                 alignTxt=component.alignTxt,
                 alignBtns=component.alignBtns,
                 buttons=btns,
                 position={
-                    'x': component.position.x,
-                    'y': component.position.y,
-                    'w': component.position.w,
-                    'h': component.position.h,
-                }
+                    "x": component.position.x,
+                    "y": component.position.y,
+                    "w": component.position.w,
+                    "h": component.position.h,
+                },
             )
         else:
             continue
@@ -244,9 +245,9 @@ def model_2_object(model):
         brokers=_brokers,
         components=_components,
         metadata={
-            'name': model.metadata.name,
-            'token': model.metadata.token,
-        }
+            "name": model.metadata.name,
+            "token": model.metadata.token,
+        },
     )
     return _model
 
@@ -262,16 +263,12 @@ def model_2_codin(model) -> Dict[str, Any]:
         "metadata": _model.metadata,
     }
 
-    colors = {
-        'Red': "#ff0000",
-        'Blue': "#00ff00",
-        'Green': "#00ff00"
-    }
+    colors = {"Red": "#ff0000", "Blue": "#00ff00", "Green": "#00ff00"}
 
     # Get the brokers
     brokers = {}
-    for b in _json['brokers']:
-        brokers[b['name']] = b
+    for b in _json["brokers"]:
+        brokers[b["name"]] = b
 
     # Get the components
     current_id = 0
@@ -282,23 +279,23 @@ def model_2_codin(model) -> Dict[str, Any]:
         # Handle the layout
         l = {
             "i": str_id,
-            "x": c['position']['x'],
-            "y": c['position']['y'],
-            "w": c['position']['w'],
-            "h": c['position']['h'],
+            "x": c["position"]["x"],
+            "y": c["position"]["y"],
+            "w": c["position"]["w"],
+            "h": c["position"]["h"],
             "minW": 1,
             "minH": 1,
             "moved": False,
             "static": False,
         }
-        codin_json['layout'].append(l)
+        codin_json["layout"].append(l)
 
         # Handle the config
-        if c['ctype'] == "Gauge":
+        if c["ctype"] == "Gauge":
             config = {
                 "type": "gauge",
                 "name": c["name"],
-                "source": c["broker"], # check this for duplicates
+                "source": c["broker"],  # check this for duplicates
                 "topic": c["topic"],
                 "variable": c["attribute"],
                 "minValue": c["minValue"],
@@ -306,30 +303,30 @@ def model_2_codin(model) -> Dict[str, Any]:
                 "leftColor": colors[c["leftColor"]],
                 "rightColor": colors[c["rightColor"]],
                 "levels": c["levels"],
-                "hideText": c['hideTxt'],
-                "unit": c['unit']
+                "hideText": c["hideTxt"],
+                "unit": c["unit"],
             }
             codin_json["items"][str_id] = config
-        elif c['ctype'] == "ValueDisplay":
+        elif c["ctype"] == "ValueDisplay":
             config = {
                 "type": "value",
                 "name": c["name"],
                 "source": c["broker"],
                 "topic": c["topic"],
                 "variable": c["attribute"],
-                "unit": "%"
+                "unit": "%",
             }
             codin_json["items"][str_id] = config
-        elif c['ctype'] == "JsonViewer":
+        elif c["ctype"] == "JsonViewer":
             config = {
                 "type": "json",
                 "name": c["name"],
                 "source": c["broker"],
                 "topic": c["topic"],
-                "variable": c["attribute"]
+                "variable": c["attribute"],
             }
             codin_json["items"][str_id] = config
-        elif c['ctype'] == "LogsDisplay":
+        elif c["ctype"] == "LogsDisplay":
             config = {
                 "type": "logs",
                 "name": c["name"],
@@ -337,62 +334,50 @@ def model_2_codin(model) -> Dict[str, Any]:
                 "topic": c["topic"],
                 "variable": c["attribute"],
                 "maxMessages": c["maxMsg"],
-                "colorKeys": [
-                    hl['key'] for hl in c["highlights"]
-                ],
-                "colorValues": [
-                    hl['color'] for hl in c["highlights"]
-                ],
+                "colorKeys": [hl["key"] for hl in c["highlights"]],
+                "colorValues": [hl["color"] for hl in c["highlights"]],
             }
             codin_json["items"][str_id] = config
-        elif c['ctype'] == "AliveDisplay":
+        elif c["ctype"] == "AliveDisplay":
             config = {
                 "type": "alive",
                 "name": c["name"],
                 "source": c["broker"],
-                "topic": c['topic'],
-                "timeout": c['timeout']
+                "topic": c["topic"],
+                "timeout": c["timeout"],
             }
             codin_json["items"][str_id] = config
-        elif c['ctype'] == "ButtonGroup":
+        elif c["ctype"] == "ButtonGroup":
             config = {
                 "type": "buttons",
-                "name": c['name'],
+                "name": c["name"],
                 "alignText": c["alignTxt"],
                 "buttonsAlign": c["alignBtns"],
-                "texts": [
-                    btn['name'] for btn in c['buttons']
-                ],
-                "sources": [
-                    btn["broker"] for btn in c['buttons']
-                ],
-                "topics": [
-                    btn['topic'] for btn in c['buttons']
-                ],
-                "payloads": [
-                   json.dumps(btn['payload']) for btn in c['buttons']
-                ],
-                "isDynamic": [
-                    btn['dynamic'] for btn in c['buttons']
-                ],
+                "texts": [btn["name"] for btn in c["buttons"]],
+                "sources": [btn["broker"] for btn in c["buttons"]],
+                "topics": [btn["topic"] for btn in c["buttons"]],
+                "payloads": [json.dumps(btn["payload"]) for btn in c["buttons"]],
+                "isDynamic": [btn["dynamic"] for btn in c["buttons"]],
                 "colors": [
-                    "white" if btn['color'] in (None, "", "None") else btn['color'] \
-                        for btn in c['buttons']
+                    "white" if btn["color"] in (None, "", "None") else btn["color"]
+                    for btn in c["buttons"]
                 ],
                 "backgrounds": [
-                    "#FF9D66" if btn['background'] in (None, "", "None") else \
-                        btn['background'] for btn in c['buttons']
+                    "#FF9D66"
+                    if btn["background"] in (None, "", "None")
+                    else btn["background"]
+                    for btn in c["buttons"]
                 ],
                 "backgroundsHover": [
-                    "#ff7e33" if btn['hover'] in (None, "", "None")  else btn['hover'] \
-                        for btn in c['buttons']
-                ]
+                    "#ff7e33" if btn["hover"] in (None, "", "None") else btn["hover"]
+                    for btn in c["buttons"]
+                ],
             }
             codin_json["items"][str_id] = config
 
     overlap = check_overlapping(codin_json)
     if overlap:
-        raise ValueError('Visual Component Overlapping issue!')
+        raise ValueError("Visual Component Overlapping issue!")
     return codin_json
 
 
@@ -404,12 +389,12 @@ def check_overlapping(codin_json: Dict[str, Any]):
     for element in codin_json["layout"]:
         for i in range(element["x"], element["x"] + element["w"] - 1):
             for j in range(element["y"], element["y"] + element["h"] - 1):
-                if (i,j) in occupancy:
+                if (i, j) in occupancy:
                     msg = f"Conflict between elements {element['i']} and {occupancy[(i,j)]} in place {(i,j)}"
                     failed = True
                     break
                 else:
-                    occupancy[(i,j)] = element['i']
+                    occupancy[(i, j)] = element["i"]
             if failed:
                 break
         if failed:

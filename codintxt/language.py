@@ -6,8 +6,13 @@ from typing import Any
 
 import textx.scoping.providers as scoping_providers
 from rich import pretty, print
-from textx import (TextXSemanticError, get_children_of_type, language,
-                   metamodel_from_file, get_location)
+from textx import (
+    TextXSemanticError,
+    get_children_of_type,
+    language,
+    metamodel_from_file,
+    get_location,
+)
 from textx.scoping import GlobalModelRepository, ModelRepository
 
 from codintxt.definitions import MODEL_REPO_PATH
@@ -25,20 +30,20 @@ def verify_component_names(model):
     for b in components:
         if b.name in _ids:
             raise TextXSemanticError(
-                f'Component with name <{b.name}> already exists', **get_location(b)
+                f"Component with name <{b.name}> already exists", **get_location(b)
             )
         _ids.append(b.name)
 
 
 def verify_broker_names(model):
     _ids = []
-    brokers = get_children_of_type('MQTTBroker', model)
-    brokers += get_children_of_type('AMQPBroker', model)
-    brokers += get_children_of_type('RedisBroker', model)
+    brokers = get_children_of_type("MQTTBroker", model)
+    brokers += get_children_of_type("AMQPBroker", model)
+    brokers += get_children_of_type("RedisBroker", model)
     for b in brokers:
         if b.name in _ids:
             raise TextXSemanticError(
-                f'Broker with name <{b.name}> already exists', **get_location(b)
+                f"Broker with name <{b.name}> already exists", **get_location(b)
             )
         _ids.append(b.name)
 
@@ -50,10 +55,10 @@ def model_proc(model, metamodel):
 
 def get_metamodel(debug=False) -> Any:
     metamodel = metamodel_from_file(
-        CURRENT_FPATH.joinpath('grammar/codin.tx'),
+        CURRENT_FPATH.joinpath("grammar/codin.tx"),
         auto_init_attributes=True,
         # global_repository=GLOBAL_REPO,
-        debug=debug
+        debug=debug,
     )
 
     metamodel.register_scope_providers(
@@ -81,7 +86,7 @@ def get_model_grammar(model_path):
     return grammar_model
 
 
-@language('codintxt', '*.codin')
+@language("codintxt", "*.codin")
 def codintxt_language():
     "Codin Textual DSL"
     mm = get_metamodel()
