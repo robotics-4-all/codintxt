@@ -74,6 +74,7 @@ class Broker(BaseModel):
     btype: str
     host: str
     port: int
+    ssl: Optional[bool] = False
     auth: Dict[str, Any]
 
 
@@ -100,6 +101,7 @@ def model_2_object(model):
                 btype=broker.__class__.__name__,
                 host=broker.host,
                 port=broker.port,
+                ssl=broker.ssl,
                 basePath=broker.basePath,
                 webPath=broker.webPath,
                 webPort=broker.webPort,
@@ -113,6 +115,7 @@ def model_2_object(model):
                 name=broker.name,
                 btype=broker.__class__.__name__,
                 host=broker.host,
+                ssl=broker.ssl,
                 port=broker.port,
                 auth={
                     "username": broker.auth.username,
