@@ -85,7 +85,7 @@ end
 
 ### Gauge
 
-![GaugeImage](https://github.com/robotics-4-all/codintxt/assets/4770702/c96d7a59-9ea6-4542-ae57-66da460500dd)
+![GaugeImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075828520951839/287212922-c96d7a59-9ea6-4542-ae57-66da460500dd.png?ex=657c1a42&is=6569a542&hm=e6e889d7fa68e07a4fa4ed3523a71084f1b7002dc987cbc6c61ea1326e980b6f&)
 
 ```
 Gauge G1
@@ -110,7 +110,7 @@ end
 
 ### LogsDisplay
 
-![LogsDisplayImage](https://github.com/robotics-4-all/codintxt/assets/4770702/17976674-43b0-40fa-8903-b157a7350330)
+![LogsDisplayImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075894203744296/287213701-17976674-43b0-40fa-8903-b157a7350330.png?ex=657c1a51&is=6569a551&hm=422883acb114cb2812c23b41d1c8efe786678ca611e2793466388bb502db722c&)
 
 
 ```
@@ -129,7 +129,7 @@ end
 
 ### ValueDisplay
 
-![ValueDisplayImage](https://github.com/robotics-4-all/codintxt/assets/4770702/e38881e3-59af-42a5-86e8-e3854ef2c201)
+![ValueDisplayImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075918727843910/287214180-e38881e3-59af-42a5-86e8-e3854ef2c201.png?ex=657c1a57&is=6569a557&hm=61d3f586451f9defe901640241b279e31a17b8e9720b966ce2fe81edb4892dbb&)
 
 
 ```
@@ -149,7 +149,7 @@ end
 
 ### AliveDisplay
 
-![AliveDisplayImage](https://github.com/robotics-4-all/codintxt/assets/4770702/6ec24d28-750f-40a0-bcd2-f10f9529035a)
+![AliveDisplayImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075939774861353/287214305-6ec24d28-750f-40a0-bcd2-f10f9529035a.png?ex=657c1a5c&is=6569a55c&hm=d44c1dcbe3b02cdbeffcfcaa799963a782e4737e5948bfa1d82ce825f9bb3310&)
 
 
 ```
@@ -168,7 +168,7 @@ end
 
 ### JsonViewer
 
-![JsonViewerImage](https://github.com/robotics-4-all/codintxt/assets/4770702/14fc70f6-fce2-4ae9-baab-7bcecce83c23)
+![JsonViewerImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075961211949126/287214548-14fc70f6-fce2-4ae9-baab-7bcecce83c23.png?ex=657c1a61&is=6569a561&hm=9ff401e30ded9a4bbe4623a75049b79231da3d67ad7f685fdba9254b47c08495&)
 
 
 ```
@@ -186,7 +186,7 @@ end
 
 ### Plot
 
-![PlotImage](https://github.com/robotics-4-all/codintxt/assets/4770702/969f7937-0f48-486e-a715-734cb76ca909)
+![PlotImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075983563391047/287214706-969f7937-0f48-486e-a715-734cb76ca909.png?ex=657c1a67&is=6569a567&hm=5189d5c1a366848e30727e72970c9a34895967fc0e2f62fce6bc79e74dff6893&)
 
 
 ```
@@ -212,7 +212,7 @@ end
 
 ### Buttons
 
-![ButtonsImage](https://github.com/robotics-4-all/codintxt/assets/4770702/5b776e1e-2ab7-4b28-9996-3f30fdf5c05f)
+![ButtonsImage](https://cdn.discordapp.com/attachments/779427740826730516/1180076002764914771/287214908-5b776e1e-2ab7-4b28-9996-3f30fdf5c05f.png?ex=657c1a6b&is=6569a56b&hm=7eb5b5b8e290ede4f1ab84087a44698da2f45ce1a7e553e068e53c8fcd5b2081&)
 
 
 ```
