@@ -35,19 +35,22 @@ def validate(ctx, model_path):
 @click.argument("model_path")
 @click.argument("generator")
 def generate(ctx, model_path, generator):
+    if generator not in ("codin", "json"):
+        print(f"[*] Generator {generator} not supported")
+        return
     if generator == "codin":
         model = build_model(model_path)
         _model = model_2_codin(model)
-        print(_model)
         filepath = f"codin-{model.metadata.name}.json"
         with open(filepath, "w") as fp:
             json.dump(_model, fp)
-    if generator == "json":
+    elif generator == "json":
         model = build_model(model_path)
         _model = model_2_json(model)
         filepath = f"codintxt-{model.metadata.name}.json"
         with open(filepath, "w") as fp:
             json.dump(_model, fp)
+    print(f"[*] M2T finished. Output: {filepath}")
 
 
 def main():
