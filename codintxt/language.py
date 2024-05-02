@@ -15,7 +15,7 @@ from textx import (
 )
 from textx.scoping import GlobalModelRepository, ModelRepository
 
-from codintxt.definitions import MODEL_REPO_PATH
+from codintxt.definitions import THIS_DIR, MODEL_REPO_PATH, BUILTIN_MODELS
 
 pretty.install()
 
@@ -53,24 +53,58 @@ def model_proc(model, metamodel):
     verify_component_names(model)
 
 
-def get_metamodel(debug=False) -> Any:
+CUSTOM_CLASSES = [
+]
+
+
+def class_provider(name):
+    classes = dict(map(lambda x: (x.__name__, x), CUSTOM_CLASSES))
+    return classes.get(name)
+
+
+def component_processor(component):
+    if component.attribute == None:
+        component.attribute = ""
+
+
+obj_processors = {
+    'Gauge': component_processor,
+    'ValueDisplay': component_processor,
+    'JsonViewer': component_processor,
+    'LogsDisplay': component_processor,
+}
+
+
+def get_metamodel(debug: bool = False, global_repo: bool = False):
     metamodel = metamodel_from_file(
-        CURRENT_FPATH.joinpath("grammar/codin.tx"),
+        join(THIS_DIR, 'grammar', 'codin.tx'),
+        classes=class_provider,
         auto_init_attributes=True,
+        textx_tools_support=True,
         # global_repository=GLOBAL_REPO,
+        global_repository=global_repo,
         debug=debug,
     )
 
-    metamodel.register_scope_providers(
-        {
-            "*.*": scoping_providers.FQNImportURI(importAs=True),
-            # "*.*": scoping_providers.FQNGlobalRepo(
-            #     join(MODEL_REPO_PATH, '*.codin')
-            # ),
-        }
-    )
+    metamodel.register_scope_providers(get_scode_providers())
     metamodel.register_model_processor(model_proc)
+    metamodel.register_obj_processors(obj_processors)
     return metamodel
+
+
+def get_scode_providers():
+    sp = {"*.*": scoping_providers.FQNImportURI(importAs=True)}
+    if BUILTIN_MODELS:
+        sp["brokers*"] = scoping_providers.FQNGlobalRepo(
+            join(BUILTIN_MODELS, "broker", "*.goal"))
+        sp["entities*"] = scoping_providers.FQNGlobalRepo(
+            join(BUILTIN_MODELS, "entity", "*.goal"))
+    if MODEL_REPO_PATH:
+        sp["brokers*"] = scoping_providers.FQNGlobalRepo(
+            join(MODEL_REPO_PATH, "broker", "*.goal"))
+        sp["entities*"] = scoping_providers.FQNGlobalRepo(
+            join(MODEL_REPO_PATH, "entity", "*.goal"))
+    return sp
 
 
 def build_model(model_path: str, debug: bool = False):
@@ -78,12 +112,6 @@ def build_model(model_path: str, debug: bool = False):
     mm = get_metamodel(debug=debug)
     model = mm.model_from_file(model_path)
     return model
-
-
-def get_model_grammar(model_path):
-    mm = get_metamodel()
-    grammar_model = mm.grammar_model_from_file(model_path)
-    return grammar_model
 
 
 @language("codintxt", "*.codin")

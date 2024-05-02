@@ -1,12 +1,16 @@
 import communication
 import vcomponents
 import utils
+import entity
 
 Model:
     imports*=Import
-    metadata=Metadata
-    brokers*=MessageBroker
-	components*=VisualComponent
+    (
+        (metadata=Metadata)?
+        (brokers*=MessageBroker)?
+        (entities*=Entity)?
+        (components*=VisualComponent)
+    )#
 ;
 
 Metadata:

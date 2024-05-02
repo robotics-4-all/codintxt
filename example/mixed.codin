@@ -3,6 +3,8 @@ Metadata
     token: "1234"
 end
 
+// Broker definitions section
+
 Broker<MQTT> BrokerA
     host: "locsys.issel.ee.auth.gr"
     port: 1883  // Change this accordingly
@@ -23,11 +25,31 @@ Broker<MQTT> BrokerB
         password: "r4a123$"
 end
 
+// Entity definitions section
+
+Entity TempSensor1
+    type: sensor
+    topic: 'bedroom.sensor.temperature'
+    broker: BrokerA
+    attributes:
+        - msg: dict
+        - level: str
+end
+
+Entity Logs
+    type: sensor
+    topic: "goaldsl.logs"
+    broker: BrokerA
+    attributes:
+        - temp: float
+end
+
+// Visual component definitions section
+
 Gauge G1
     label: "MyGauge"
-    topic: "sensors.humidity"
-    broker: BrokerA
-    attribute: "humidity"
+    entity: TempSensor1
+    attribute: temp
     minValue: 0
     maxValue: 1
     leftColor: Red
@@ -44,9 +66,8 @@ end
 
 ValueDisplay VD1
     label: "MyValueDisplay"
-    topic: "sensors.humidity"
-    broker: BrokerA
-    attribute: "humidity"
+    entity: TempSensor1
+    attribute: temp
     unit: "%"
     position:
         x: 10
@@ -57,9 +78,7 @@ end
 
 JsonViewer JV1
     label: "MyJsonViewer"
-    topic: "sensors.humidity"
-    broker: BrokerA
-    attribute: "humidity"
+    entity: TempSensor1
     position:
         x: 20
         y: 20
@@ -69,8 +88,7 @@ end
 
 AliveDisplay AV1
     label: "MyAliveDisplay"
-    topic: "sensors.humidity"
-    broker: BrokerA
+    entity: TempSensor1
     timeout: 60
     position:
         x: 30
@@ -81,9 +99,8 @@ end
 
 LogsDisplay LD1
     label: "MyLogsDisplay"
-    topic: "smauto.logs"
-    broker: BrokerA
-    attribute: "msg"
+    entity: Logs
+    attribute: msg
     position:
         x: 40
         y: 40
