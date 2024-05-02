@@ -65,6 +65,11 @@ def class_provider(name):
 def component_processor(component):
     if component.attribute == None:
         component.attribute = ""
+    return component
+
+def nid_processor(nid):
+    nid = nid.replace("\n", "")
+    return nid
 
 
 obj_processors = {
@@ -72,6 +77,7 @@ obj_processors = {
     'ValueDisplay': component_processor,
     'JsonViewer': component_processor,
     'LogsDisplay': component_processor,
+    'NID': nid_processor,
 }
 
 
