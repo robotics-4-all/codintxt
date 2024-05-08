@@ -113,6 +113,7 @@ Entity EnvSensor_1
     type: sensor
     topic: 'bedroom.sensors.env'
     broker: CloudMQTT
+    description: "A smart env sensor installed in the bedroom of the house"
     attributes:
         - temperature: float
         - humidity: float
@@ -135,15 +136,17 @@ Entity Bulb_A
     type: actuator
     topic: "bedroom.actuators.bulb_a"
     broker: CloudMQTT
+    description: "A smart bulb installed in the bedroom of the house"
     attributes:
         - state: bool
-        - state: bool
+        - brightness: float
 end
 
-Entity Relay_2
+Entity Switch_2
     type: actuator
-    topic: 'bedroom.actuators.relay_2'
+    topic: 'bedroom.actuators.switch_2'
     broker: CloudMQTT
+    description: "A smart switch with two in-out lines installed in the bedroom of the house"
     attributes:
         - out_a: bool
         - out_b: bool
@@ -304,6 +307,18 @@ Adds Plot definitions into a PlotView container for visualization of entity attr
 
 ![image](https://github.com/robotics-4-all/codintxt/assets/4770702/5a568a61-542b-400a-9f21-e799236cfa58)
 
+Below is the list of **Plot** properties:
+- label: The label of the plot
+- ptype: The type of the plot. Select between `Line` and `Bar`.
+- entity: The referenced entity
+- attribute: The attribute of the entity to plot
+
+Below is the list of **PlotView** properties:
+- label: The label of the plot
+- plots: The list of plots to include
+- position: The position on the canvas, defined using the `Placement` grammar.
+
+The following examples shows the construction of a **PlotView** that includes three (3) **Plots**.
 
 ```
 Plot HumidityPlot
@@ -382,13 +397,80 @@ ButtonGroup Btn_Group_A
 end
 ```
 
+## General Rules and Enumerations
 
-## Installation
+### Color
+
+Valid color values for visual component properties are listed below.
+
+```
+Color:
+    'Red'		|
+    'red'		|
+    'Blue'		|
+    'blue'		|
+	'Yellow'	|
+	'yellow'	|
+	'Green'     |
+	'green'     |
+	'Cyan'      |
+	'cyan'
+;
+```
+
+### Alignment
+
+Valid alignment values for visual component properties are listed below.
+
+```
+AlignType:
+    'Center'     |
+    'Left'       |
+    'Right'      |
+    'Top'        |
+    'Bottom'     |
+    'Horizontal' |
+    'Vertical'
+;
+```
+
+### Placement
+
+Used in visual components to define the position on the canvas, given `x`, `y`, `width` and `height` values.
+The syntax (in textX) is shown below.
+
+```
+Placement:
+    'x:' x=INT
+    'y:' y=INT
+    'width:' w=INT
+    'height:' h=INT
+;
+```
+
+For example, positioning of a PlotView component on the canvas of the dashboard is defined using the syntax below:
+
+```
+PlotView MyPlots
+    label: "Env Sensor Plots"
+    plots:
+        - HumidityPlot
+        - TemperaturePlot
+        - GasPlot
+    position:
+        x: 0
+        y: 0
+        width: 8
+        height: 8
+end
+```
+
+# Installation
 
 Build and run the docker image, using the `build.sh` and `start.sh` scripts.
 
 This repository also includes a `docker-compose.yml` file for deploying with docker compose.
 
-## Examples
+# Examples
 
 Examples can be found in the [examples/](./examples) directory of this repository.
