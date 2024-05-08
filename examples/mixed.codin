@@ -1,28 +1,30 @@
 Metadata
-    name: "TestModel"
-    token: "1234"
+    name: "BasicExample"
+    description: "An example of using the basic components in CodinTxt"
+    author: "klpanagi"
+    token: "1234"  // The Codin API Token here!!
 end
 
 // Broker definitions section
 
 Broker<MQTT> BrokerA
-    host: "locsys.issel.ee.auth.gr"
+    host: "localhost"
     port: 1883  // Change this accordingly
     webPath: "/mqtt"
     webPort: 8883
     auth:
-        username: "r4a"
-        password: "r4a123$"
+        username: "USERNAME"
+        password: "PASSWORD"
 end
 
 Broker<MQTT> BrokerB
-    host: "locsys.issel.ee.auth.gr"
+    host: "homeassistant.local"
     port: 1883  // Change this accordingly
     webPath: "/mqtt"
     webPort: 8883
     auth:
-        username: "r4a"
-        password: "r4a123$"
+        username: "USERNAME"
+        password: "PASSWORD"
 end
 
 // Entity definitions section

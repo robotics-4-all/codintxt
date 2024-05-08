@@ -1,16 +1,18 @@
 Metadata
-    name: "TestModel"
-    token: "1234"
+    name: "ButtonsExample"
+    description: "An example of using the Button and ButtonGroup components"
+    author: "klpanagi"
+    token: "1234"  // The Codin API Token here!!
 end
 
 Broker<MQTT> CloudMQTT
-    host: "locsys.issel.ee.auth.gr"
+    host: "localhost"
     port: 1883  // Change this accordingly
     webPath: "/mqtt"
     webPort: 8883
     auth:
-        username: "r4a"
-        password: "r4a123$"
+        username: "USERNAME"
+        password: "PASSWORD"
 end
 
 Entity Relay_1
