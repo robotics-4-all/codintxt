@@ -27,18 +27,18 @@ end
 
 // Entity definitions section
 
-Entity TempSensor1
+Entity Logs
     type: sensor
-    topic: 'bedroom.sensor.temperature'
+    topic: "goaldsl.logs"
     broker: BrokerA
     attributes:
         - msg: dict
         - level: str
 end
 
-Entity Logs
+Entity TempSensor1
     type: sensor
-    topic: "goaldsl.logs"
+    topic: 'bedroom.sensor.temperature'
     broker: BrokerA
     attributes:
         - temp: float

@@ -13,18 +13,43 @@ Broker<MQTT> CloudMQTT
         password: "r4a123$"
 end
 
+Entity EnvSensor_1
+    type: sensor
+    topic: 'bedroom.sensor.env'
+    broker: CloudMQTT
+    attributes:
+        - temperature: float
+        - humidity: float
+        - gas: float
+end
+
 Plot HumidityPlot
     label: "Humidity"
-    topic: "bedroom.humidity"
-    broker: CloudMQTT
+    entity: EnvSensor_1
     ptype: Line
-    attribute: "humidity"
+    attribute: humidity
+end
+
+Plot TemperaturePlot
+    label: "Temperature"
+    entity: EnvSensor_1
+    ptype: Line
+    attribute: temperature
+end
+
+Plot GasPlot
+    label: "Gas"
+    entity: EnvSensor_1
+    ptype: Line
+    attribute: gas
 end
 
 PlotView MyPlots
     label: "Env Sensor Plots"
     plots:
         - HumidityPlot
+        - TemperaturePlot
+        - GasPlot
     position:
         x: 0
         y: 0
