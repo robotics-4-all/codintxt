@@ -13,20 +13,36 @@ Broker<MQTT> CloudMQTT
         password: "r4a123$"
 end
 
+Entity Relay_1
+    type: actuator
+    topic: 'bedroom.actuator.relay_1'
+    broker: CloudMQTT
+    attributes:
+        - state: int
+end
+
+Entity Relay_2
+    type: actuator
+    topic: 'bedroom.actuator.relay_2'
+    broker: CloudMQTT
+    attributes:
+        - out_a: bool
+        - out_b: bool
+end
+
 Button Btn1
     label: "Button1"
-    topic: "actuators.relay_1"
-    broker: CloudMQTT
+    entity: Relay_1
     payload:
-        - state: int = 1
+        - state: 1
 end
 
 Button Btn2
     label: "Button2"
-    topic: "actuators.relay_2"
-    broker: CloudMQTT
+    entity: Relay_2
     payload:
-        - state: int = 1
+        - out_a: false
+        - out_b: true
 end
 
 ButtonGroup Btn_Group_A
