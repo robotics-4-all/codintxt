@@ -100,7 +100,7 @@ Button:
     ('color:' color=Color)?
     ('background:' bg=Color)?
     ('hover:' hover=Color)?
-    ('payload:' '-' payload*=Attribute['-'])
+    ('payload:' ('-' attrName=ID ':' attrVal=BASETYPE)*)
 )#
 'end'
 ;
@@ -121,8 +121,7 @@ Plot:
 'Plot' name=ID
 (
     ('label:' label=STRING)
-    ('topic:' topic=STRING)
-    ('broker:' broker=[MessageBroker])
+    ('entity:' entity=[Entity:FQN|+m:entities*])
     ('ptype:' ptype=PlotType)
     ('attribute:' attribute=NID)
     ('color:' color=Color)?

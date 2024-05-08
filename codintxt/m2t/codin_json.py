@@ -222,7 +222,7 @@ def model_2_object(model):
                     color=str(btn.color),
                     background=str(btn.bg),
                     hover=str(btn.hover),
-                    payload={attr.name: attr.default for attr in btn.payload},
+                    payload=dict(zip(btn.attrName, btn.attrVal)),
                     position={"x": 0, "y": 0, "w": 0, "h": 0},
                 )
                 for btn in component.buttons
