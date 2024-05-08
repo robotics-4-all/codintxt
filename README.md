@@ -1,30 +1,183 @@
-# codintxt
-Codin Textual DSL
 
-## Introduction
+![CodinTxt_Light](https://github.com/robotics-4-all/codintxt/assets/4770702/4151cda1-9d69-46e7-8953-ba28ee60fb02)
+
+
+# Introduction
 
 CodinTxt is a textual DSL for automating the development process for the
 [Codin low-code platform](https://codin.issel.ee.auth.gr/).
 
-Codin was engineered by the [ISSEL Laboratory](https://lab.issel.ee.auth.gr/)
-to automate the development process of Dashboards for Cyber-Physical Systems.
-It provides a Web UI for developing Dashboards using drag-and-drop of various
-components for remote monitoring and control of devices, applications and
-systems.
+![image](https://github.com/robotics-4-all/codintxt/assets/4770702/e2e18911-077d-4af1-ad95-c5d4475dd722)
 
-**Note**:
-In order to connect from Codin to non-secure hosts (not SSL) follow the instructions from the image below.
+Codin was engineered and developed at the [ISSEL Laboratory](https://lab.issel.ee.auth.gr/) to automate the development process of
+Dashboards for Cyber-Physical Systems. It provides a Web UI for developing Dashboards using drag-and-drop of various
+components for remote monitoring and control of devices, applications and systems.
 
-![Codin SSL](https://cdn.discordapp.com/attachments/1174290357333266482/1179008567475458108/image.png?ex=6578384b&is=6565c34b&hm=be39efda5e048dc7a699188026549b8bce306a2a77f807616b37f9f48f85464b&)
+**Note #1**: For the auto deployment to Codin you have to create a Token from your **Codin Profile Page** (see image below)
 
-**Note #2**: For the auto deployment to Codin you have to create a Token from your **Codin Profile Page** (see image below)
+![image](https://github.com/robotics-4-all/codintxt/assets/4770702/522caa8f-15b5-43fa-8df8-d068b2e0aa8e)
 
-![Codin Token](https://media.discordapp.net/attachments/779427740826730516/1179011338480123975/image.png)
 
 CodinTxt defines a Metamodel for the Codin Platform (thus it is
 Platform-specific) and allows definition of Dashboards using textual semantics,
 while it also provides an **M2T Transformation** for generating a Json that can
 be imported in Codin.
+
+
+# The Language
+
+The grammar of the DSL is pretty simple.
+
+A CodinTxt model includes:
+- Metadata definition
+- Broker Definition
+- Visual components
+
+The **Metadata** section must be top-level, before any other definitions. In the same way, **Broker** definitions follow, but before any **Visual Component** definition.
+
+## Metadata
+
+Model metadata include the following information:
+
+- **name**: The name of the model
+- **description**: A brief description of the model
+- **authoer**: The author of the model
+- **token**: The Codin API Token for deployment purposes
+
+Below is an example Metadata definition.
+
+```
+Metadata
+    name: "MyCodinTxtModel"
+    description: "My first CodinTxt model"
+    author: "klpanagi"
+    token: "CODIN_TOKEN_HERE"  // ** The Codin token **
+end
+```
+
+## Broker
+
+The Broker acts as the communication layer for messages where each device has
+its own Topic which is basically a mailbox for sending and receiving messages.
+SmartAutomation DSL supports Brokers which support the MQTT, AMQP and Redis
+protocols. You can define a Broker using the syntax in the following example:
+
+```
+Broker<MQTT> default_broker
+    host: "emqx.auth.gr"
+    port: 1883
+    ssl: false
+    webPath: "/mqtt"
+    webPort: 8883
+    auth:
+        username: "BROKER_USERNAME"
+        password: "BROKER_PASSWORD"
+end
+```
+
+
+Broker definitions include the following information:
+
+- **type**: The first line can be `MQTT`, `AMQP` or `Redis` according to the Broker type
+- **host**: Host IP address or hostname for the Broker
+- **port**: Broker (default protocol) port number
+- **ssl**: Whether or not to use SSL/TLS for communication
+- **webPort**: Broker Web port number
+- **webPath**: Broker Web transport default path (usually `/ws` or `/mqtt`)
+- **auth**: Authentication credentials. Unified for all communication brokers.
+    - **username**: Username used for authentication
+    - **password**: Password used for authentication
+- **vhost (Optional)**: Vhost parameter. Only for AMQP brokers
+- **topicExchange (Optional)**: (Optional) Exchange parameter. Only for AMQP brokers.
+- **rpcExchange (Optional)**: Exchange parameter. Only for AMQP brokers.
+- **db (Optional)**: Database number parameter. Only for Redis brokers.
+
+
+## Entities
+
+Entities are your connected smart devices that send and receive information
+using a message broker. Entities have the following required properties:
+
+- A unique name
+- A broker to connect to
+- A topic to send/receive messages
+- A set of attributes
+
+**Attributes** are what define the structure and the type of information in the
+messages the Entity sends to the communication broker.
+
+Entity definitions follow the syntax of the below examples, for both sensor and actuator types. The difference between the two is that sensors are considered "Producers" while actuators are "Consumers" in the environment. Sensor Entities have an extra property, that is the `freq` to set the publishing frequency of either physical or virtual.
+
+```
+Entity EnvSensor_1
+    type: sensor
+    topic: 'bedroom.sensors.env'
+    broker: CloudMQTT
+    attributes:
+        - temperature: float
+        - humidity: float
+        - gas: float
+end
+
+Entity Logs_A
+    type: sensor
+    topic: "myagent.logs"
+    broker: BrokerA
+    description: "Logs received from a software agent attached to the system"
+    attributes:
+        - msg: dict
+        - level: str
+end
+```
+
+```
+Entity Bulb_A
+    type: actuator
+    topic: "bedroom.actuators.bulb_a"
+    broker: CloudMQTT
+    attributes:
+        - state: bool
+        - state: bool
+end
+
+Entity Relay_2
+    type: actuator
+    topic: 'bedroom.actuators.relay_2'
+    broker: CloudMQTT
+    attributes:
+        - out_a: bool
+        - out_b: bool
+end
+```
+
+- **type**: The Entity type. Currently supports `sensor`, `actuator` or `hybrid`
+- **topic**: The Topic in the Broker used by the Entity to send and receive
+messages. Note that / should be substituted with .
+(e.g: bedroom/aircondition -> bedroom.aircondition).
+- **broker**: The name property of a previously defined Broker which the
+Entity uses to communicate.
+- **attributes**: Attributes have a name and a type. As can be seen in the above
+example, HA-Auto supports int, float, string, bool, list and dictionary types.
+Note that nested dictionaries are also supported.
+- **description (Optional)**: A description of the Entity
+- **freq (Optional)**: Used for Entities of type "**sensor**" to set the msg publishing rate
+
+Notice that each Entity has it's own reference to a Broker, thus the metamodel
+allows for communicating with Entities which are connected to different message
+brokers. This allows for definining automation for multi-broker architectures.
+
+Supported data types for Attributes:
+
+- **int**: Integer numerical values
+- **float**: Floating point numerical values
+- **bool**: Boolean (true/false) values
+- **str**: String values
+- **time**: Time values (e.g. `01:25`)
+- **list**: List / Array
+- **dict**: Dictionary
+
+
+## Visual Components
 
 Below is the list of the currently supported Codin Components:
 
@@ -38,61 +191,18 @@ Below is the list of the currently supported Codin Components:
 - Button
 - ButtonGroup
 
-
-## The Language
-
-The grammar of the DSL is pretty simple.
-
-A CodinTxt model includes:
-- Metadata definition
-- Broker Definition
-- Visual components
-
-The **Metadata** section must be top-level, before any other definitions. In the same way, **Broker** definitions follow, but before any **Visual Component** definition.
-
-```
-Metadata
-    name: "MyCodinTxtModel"
-    description: "My first CodinTxt model"
-    author: "klpanagi"
-    token: "CODIN_TOKEN_HERE"  // ** The Codin token **
-end
-
-Broker<MQTT> default_broker
-    host: "emqx.auth.gr"
-    port: 1883
-    ssl: false
-    webPath: "/mqtt"
-    webPort: 8883
-    auth:
-        username: "BROKER_USERNAME"
-        password: "BROKER_PASSWORD"
-end
-
-// Transformed from actuator Entity sn_temperature_1
-JsonViewer sn_temperature_1Display
-    label: "sn_temperature_1 Display"
-    topic: "sensors.sn_temperature_1"
-    broker: default_broker
-    position:
-        x: 0
-        y: 0
-        width: 4
-        height: 4
-end
-...
-```
-
 ### Gauge
 
-![GaugeImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075828520951839/287212922-c96d7a59-9ea6-4542-ae57-66da460500dd.png?ex=657c1a42&is=6569a542&hm=e6e889d7fa68e07a4fa4ed3523a71084f1b7002dc987cbc6c61ea1326e980b6f&)
+Visualize entity attributes (or messages arriving at topics in general) using a gauge component.
+
+![image](https://github.com/robotics-4-all/codintxt/assets/4770702/2832ebe9-fe81-4845-876a-572769b031f8)
+
 
 ```
 Gauge G1
     label: "MyGauge"
-    topic: "sensors.humidity"
-    broker: BrokerA
-    attribute: "humidity"
+    entity: TempSensor1
+    attribute: temp
     minValue: 0
     maxValue: 1
     leftColor: Red
@@ -110,34 +220,36 @@ end
 
 ### LogsDisplay
 
-![LogsDisplayImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075894203744296/287213701-17976674-43b0-40fa-8903-b157a7350330.png?ex=657c1a51&is=6569a551&hm=422883acb114cb2812c23b41d1c8efe786678ca611e2793466388bb502db722c&)
+Use this component to monitor entity attributes (or messages arriving at topics in general) formatted as logs.
+
+![image](https://github.com/robotics-4-all/codintxt/assets/4770702/51c5b286-858e-4949-9c4c-e3881a11ee4c)
 
 
 ```
-LogsDisplay RTMonitorLogs
-    label: "RTMonitor Logs"
-    topic: "smauto.o3iYD.logs"
-    broker: default_broker
-    attribute: "msg"
+LogsDisplay LD1
+    label: "MyLogsDisplay"
+    entity: Logs
+    attribute: msg
     position:
-        x: 0
-        y: 4
-        width: 8
-        height: 4
+        x: 40
+        y: 40
+        width: 10
+        height: 10
 end
 ```
 
 ### ValueDisplay
 
-![ValueDisplayImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075918727843910/287214180-e38881e3-59af-42a5-86e8-e3854ef2c201.png?ex=657c1a57&is=6569a557&hm=61d3f586451f9defe901640241b279e31a17b8e9720b966ce2fe81edb4892dbb&)
+Use this component to monitor an entity attribute (or a message property in general).
+
+![image](https://github.com/robotics-4-all/codintxt/assets/4770702/b2826070-2182-451e-86d2-c32f1c6f429e)
 
 
 ```
 ValueDisplay VD1
     label: "MyValueDisplay"
-    topic: "sensors.humidity"
-    broker: BrokerA
-    attribute: "humidity"
+    entity: TempSensor1
+    attribute: temp
     unit: "%"
     position:
         x: 10
@@ -149,14 +261,15 @@ end
 
 ### AliveDisplay
 
-![AliveDisplayImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075939774861353/287214305-6ec24d28-750f-40a0-bcd2-f10f9529035a.png?ex=657c1a5c&is=6569a55c&hm=d44c1dcbe3b02cdbeffcfcaa799963a782e4737e5948bfa1d82ce825f9bb3310&)
+Use this component to monitor activeness of entities (or topics in general).
+
+![image](https://github.com/robotics-4-all/codintxt/assets/4770702/0db32a0b-eefe-414b-8b17-a6bc41ef46b0)
 
 
 ```
 AliveDisplay AV1
     label: "MyAliveDisplay"
-    topic: "sensors.humidity"
-    broker: BrokerA
+    entity: TempSensor1
     timeout: 60
     position:
         x: 30
@@ -168,40 +281,58 @@ end
 
 ### JsonViewer
 
-![JsonViewerImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075961211949126/287214548-14fc70f6-fce2-4ae9-baab-7bcecce83c23.png?ex=657c1a61&is=6569a561&hm=9ff401e30ded9a4bbe4623a75049b79231da3d67ad7f685fdba9254b47c08495&)
+This component is used to visualize json-formatted entity attributes (or messages arriving at topics in general).
+
+![image](https://github.com/robotics-4-all/codintxt/assets/4770702/77d64d85-be41-4901-80b3-9012d05348c4)
 
 
 ```
-JsonViewer RTMonitorEvents
-    label: "RTMonitor Events"
-    topic: "smauto.o3iYD.event"
-    broker: default_broker
+JsonViewer JV1
+    label: "MyJsonViewer"
+    entity: TempSensor1
     position:
-        x: 8
-        y: 4
-        width: 4
-        height: 4
+        x: 20
+        y: 20
+        width: 10
+        height: 10
 end
 ```
 
 ### Plot
 
-![PlotImage](https://cdn.discordapp.com/attachments/779427740826730516/1180075983563391047/287214706-969f7937-0f48-486e-a715-734cb76ca909.png?ex=657c1a67&is=6569a567&hm=5189d5c1a366848e30727e72970c9a34895967fc0e2f62fce6bc79e74dff6893&)
+Adds Plot definitions into a PlotView container for visualization of entity attributes (or messages arriving at topics in general).
+
+![image](https://github.com/robotics-4-all/codintxt/assets/4770702/5a568a61-542b-400a-9f21-e799236cfa58)
 
 
 ```
 Plot HumidityPlot
     label: "Humidity"
-    topic: "bedroom.humidity"
-    broker: CloudMQTT
+    entity: EnvSensor1
     ptype: Line
-    attribute: "humidity"
+    attribute: humidity
+end
+
+Plot TemperaturePlot
+    label: "Temperature"
+    entity: EnvSensor1
+    ptype: Line
+    attribute: temperature
+end
+
+Plot GasPlot
+    label: "Gas"
+    entity: EnvSensor1
+    ptype: Line
+    attribute: gas
 end
 
 PlotView MyPlots
     label: "Env Sensor Plots"
     plots:
         - HumidityPlot
+        - TemperaturePlot
+        - GasPlot
     position:
         x: 0
         y: 0
@@ -212,7 +343,11 @@ end
 
 ### Buttons
 
-![ButtonsImage](https://cdn.discordapp.com/attachments/779427740826730516/1180076002764914771/287214908-5b776e1e-2ab7-4b28-9996-3f30fdf5c05f.png?ex=657c1a6b&is=6569a56b&hm=7eb5b5b8e290ede4f1ab84087a44698da2f45ce1a7e553e068e53c8fcd5b2081&)
+Buttons are used to allow manually sending commands to actuator entities from the Codin dashboard.
+Commands practically change the state of the actuator, by setting the relevant attribute(s) of the entity.
+
+![image](https://github.com/robotics-4-all/codintxt/assets/4770702/81f09b55-35c8-4b6a-9021-2852db387cd6)
+
 
 
 ```
@@ -256,4 +391,4 @@ This repository also includes a `docker-compose.yml` file for deploying with doc
 
 ## Examples
 
-TODO.
+Examples can be found in the [examples/](./examples) directory of this repository.
