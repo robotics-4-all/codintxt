@@ -41,7 +41,7 @@ api.add_middleware(
     allow_headers=["*"],
 )
 
-TMP_DIR = "/tmp/smauto"
+TMP_DIR = "/tmp/codintxt"
 
 
 if not os.path.exists(TMP_DIR):
