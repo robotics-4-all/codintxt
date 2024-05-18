@@ -312,38 +312,67 @@ Below is the list of **Plot** properties:
 - ptype: The type of the plot. Select between `Line` and `Bar`.
 - entity: The referenced entity
 - attribute: The attribute of the entity to plot
+- color: The color of the plot (red, blue, yellow, green, cyan)
+- smooth (bool): Smooth the plot. This is a Codin functionality.
 
 Below is the list of **PlotView** properties:
 - label: The label of the plot
 - plots: The list of plots to include
 - position: The position on the canvas, defined using the `Placement` grammar.
+- xAxis (bool): Enable/Disable x axis.
+- yAxis (bool): Enable/Disable y axis.
+- horizontalGrid (bool): Enable/Disable horizontal plot grid.
+- verticalGrid (bool): Enable/Disable vertical plot grid.
+- legend (bool): Show the legent
+- legendPosition: Select between  topRight, topLeft, bottomRight, bottomLeft
+- maxValues (int): Maximum values to show on the plot
+
 
 The following examples shows the construction of a **PlotView** that includes three (3) **Plots**.
 
 ```
+Entity EnvSensor_1
+    type: sensor
+    topic: 'bedroom.sensor.env'
+    broker: CloudMQTT
+    attributes:
+        - temperature: float
+        - humidity: float
+        - gas: float
+end
+
 Plot HumidityPlot
     label: "Humidity"
-    entity: EnvSensor1
+    entity: EnvSensor_1
     ptype: Line
     attribute: humidity
 end
 
 Plot TemperaturePlot
     label: "Temperature"
-    entity: EnvSensor1
+    entity: EnvSensor_1
     ptype: Line
     attribute: temperature
+    color: red
+    smooth: False
 end
 
 Plot GasPlot
     label: "Gas"
-    entity: EnvSensor1
+    entity: EnvSensor_1
     ptype: Line
     attribute: gas
 end
 
 PlotView MyPlots
     label: "Env Sensor Plots"
+    xAxis: True
+    yAxis: True
+    horizontalGrid: True
+    verticalGrid: True
+    legend: True
+    maxValues: -1
+    legendPosition: topRight
     plots:
         - HumidityPlot
         - TemperaturePlot

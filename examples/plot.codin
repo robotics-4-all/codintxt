@@ -5,20 +5,21 @@ Metadata
     token: "1234"  // The Codin API Token here!!
 end
 
-Broker<MQTT> CloudMQTT
-    host: "localhost"
-    port: 1883  // Change this accordingly
+Broker<MQTT> locsys_broker
+    host: "locsys.issel.ee.auth.gr"
+    port: 1883
+    ssl: True
     webPath: "/mqtt"
-    webPort: 8883
+    webPort: 8894
     auth:
-        username: "USERNAME"
-        password: "PASSWORD"
+        username: ""
+        password: ""
 end
 
 Entity EnvSensor_1
     type: sensor
     topic: 'bedroom.sensor.env'
-    broker: CloudMQTT
+    broker: locsys_broker
     attributes:
         - temperature: float
         - humidity: float
@@ -37,6 +38,8 @@ Plot TemperaturePlot
     entity: EnvSensor_1
     ptype: Line
     attribute: temperature
+    color: red
+    smooth: False
 end
 
 Plot GasPlot
@@ -48,6 +51,13 @@ end
 
 PlotView MyPlots
     label: "Env Sensor Plots"
+    xAxis: True
+    yAxis: True
+    horizontalGrid: True
+    verticalGrid: True
+    legend: True
+    maxValues: -1
+    legendPosition: topRight
     plots:
         - HumidityPlot
         - TemperaturePlot
