@@ -55,6 +55,8 @@ Metadata
 end
 ```
 
+The token is used to deploy the dashboard in Codin
+
 ## Broker
 
 The Broker acts as the communication layer for messages where each device has
@@ -68,7 +70,7 @@ Broker<MQTT> default_broker
     port: 1883
     ssl: false
     webPath: "/mqtt"
-    webPort: 8883
+    webPort: 8093  // 8093 is the MQTT over websockets port for EMQX broker
     auth:
         username: "BROKER_USERNAME"
         password: "BROKER_PASSWORD"
@@ -82,8 +84,8 @@ Broker definitions include the following information:
 - **host**: Host IP address or hostname for the Broker
 - **port**: Broker (default protocol) port number
 - **ssl**: Whether or not to use SSL/TLS for communication
-- **webPort**: Broker Web port number
-- **webPath**: Broker Web transport default path (usually `/ws` or `/mqtt`)
+- **webPort**: Broker Web port number for MQTT over Websockets communication
+- **webPath**: Broker Web transport default path (usually `/ws` or `/mqtt`) for MQTT over Websockets communication
 - **auth**: Authentication credentials. Unified for all communication brokers.
     - **username**: Username used for authentication
     - **password**: Password used for authentication
