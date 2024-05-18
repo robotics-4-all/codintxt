@@ -91,7 +91,7 @@ class PlotView(Container):
     yAxis: bool = True
     legend: bool = True
     maxValues: int = -1
-    legendPosition: str = "Top"
+    legendPosition: str = "topRight"
 
 
 class Broker(BaseModel):

@@ -81,6 +81,13 @@ JsonViewer:
 'end'
 ;
 
+PlotLegendPosition:
+    'topRight'      |
+    'topLeft'       |
+    'bottomRight'   |
+    'bottomLeft'
+;
+
 AlignType:
     'Center' |
     'Left' |
@@ -142,7 +149,7 @@ PlotView:
     ('yAxis:' yAxis=BOOL)?
     ('legend:' legend=BOOL)?
     ('maxValues:' maxValues=INT)?
-    ('legendPosition:' legendPosition=AlignType)?
+    ('legendPosition:' legendPosition=PlotLegendPosition)?
 )#
 'end'
 ;
