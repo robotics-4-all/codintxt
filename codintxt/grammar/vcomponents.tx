@@ -21,7 +21,7 @@ Gauge:
 (
     ('label:' label=STRING)
     ('entity:' entity=[Entity:FQN|+m:entities*])
-    ('attribute:' attribute=NID)
+    ('attribute:' attribute=SMID)
     ('position:' position=Placement)
     ('minValue:' minValue=FLOAT)
     ('maxValue:' maxValue=FLOAT)
@@ -39,7 +39,7 @@ LogsDisplay:
 (
     ('label:' label=STRING)
     ('entity:' entity=[Entity:FQN|+m:entities*])
-    ('attribute:' attribute=NID)
+    ('attribute:' attribute=SMID)
     ('maxMessages:' maxMsg=INT)?
     ('highlights:' '-' colorKeys*=Highlight['-'])?
     ('position:' position=Placement)
@@ -52,7 +52,7 @@ ValueDisplay:
 (
     ('label:' label=STRING)
     ('entity:' entity=[Entity:FQN|+m:entities*])
-    ('attribute:' attribute=NID)
+    ('attribute:' attribute=SMID)
     ('position:' position=Placement)
     ('unit:' unit=STRING)?
 )#
@@ -75,7 +75,7 @@ JsonViewer:
 (
     ('label:' label=STRING)
     ('entity:' entity=[Entity:FQN|+m:entities*])
-    ('attribute:' attribute=NID)?
+    ('attribute:' attribute=SMID)?
     ('position:' position=Placement)
 )#
 'end'
@@ -123,7 +123,7 @@ Plot:
     ('label:' label=STRING)
     ('entity:' entity=[Entity:FQN|+m:entities*])
     ('ptype:' ptype=PlotType)
-    ('attribute:' attribute=NID)
+    ('attribute:' attribute=SMID)
     ('color:' color=Color)?
     ('smooth:' smooth=BOOL)?
     ('verticalGrid:' verticalGrid=BOOL)?

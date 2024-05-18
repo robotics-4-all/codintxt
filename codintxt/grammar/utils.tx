@@ -3,9 +3,16 @@ ADDRESS_ID: /([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}/;
 
 FQN: ID+['.'];
 FQNI: ID+['.']('.*')?;
-// Import: 'import' importURI=FQNI ('as' name=ID)?;
+
 NID: /(.*?)\n/;
 NIDREF: NID+['.']('.*')?;
+SMID: !Keyword ID;
+
+Keyword:
+    'import'
+;
+
+// Import: 'import' importURI=FQNI ('as' name=ID)?;
 Import: 'import' name=STRING;
 
 // Comments
