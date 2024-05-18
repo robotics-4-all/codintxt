@@ -14,8 +14,9 @@ from fastapi.security import APIKeyHeader
 from codintxt.language import build_model
 from codintxt.m2t import model_2_codin, model_2_json
 from codintxt.validation import validate_model_file
+from codintxt.definitions import TMP_DIR
 
-API_KEY = os.getenv("API_KEY", "API_KEY")
+API_KEY = os.getenv("API_KEY", "1234")
 
 api_keys = [API_KEY]
 
@@ -40,8 +41,6 @@ api.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-TMP_DIR = "/tmp/codintxt"
 
 
 if not os.path.exists(TMP_DIR):

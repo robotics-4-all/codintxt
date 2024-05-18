@@ -8,13 +8,20 @@ import json
 pretty.install()
 
 
+class Container(BaseModel):
+    ctype: str
+    name: str
+    label: str = ""
+    position: Dict[str, Any] = {"x": 0, "y": 0, "w": 0, "h": 0}
+
+
 class Component(BaseModel):
     ctype: str
     name: str
     label: str = ""
     topic: str = ""
     broker: str = ""
-    position: Dict[str, Any]
+    position: Dict[str, Any] = {"x": 0, "y": 0, "w": 0, "h": 0}
 
 
 class Gauge(Component):
@@ -63,10 +70,28 @@ class Button(Component):
     payload: Dict[str, Any]
 
 
-class ButtonGroup(Component):
+class ButtonGroup(Container):
     alignTxt: str = ""
     alignBtns: str = ""
     buttons: List[Button]
+
+
+class Plot(Component):
+    attribute: str = ""
+    color: str = "red"
+    smooth: bool = False
+    ptype: str = "Line"
+
+
+class PlotView(Container):
+    plots: List[Plot]
+    verticalGrid: bool = True
+    horizontalGrid: bool = True
+    xAxis: bool = True
+    yAxis: bool = True
+    legend: bool = True
+    maxValues: int = -1
+    legendPosition: str = "Top"
 
 
 class Broker(BaseModel):
@@ -223,7 +248,6 @@ def model_2_object(model):
                     background=str(btn.bg),
                     hover=str(btn.hover),
                     payload=dict(zip(btn.attrName, btn.attrVal)),
-                    position={"x": 0, "y": 0, "w": 0, "h": 0},
                 )
                 for btn in component.buttons
             ]
@@ -240,6 +264,40 @@ def model_2_object(model):
                     "w": component.position.w,
                     "h": component.position.h,
                 },
+            )
+        elif component.__class__.__name__ == "PlotView":
+            plots = [
+                Plot(
+                    ctype="Plot",
+                    name=plot.name,
+                    label=plot.label,
+                    topic=plot.entity.topic.replace(".", "/"),
+                    broker=plot.entity.broker.name,
+                    ptype="bar" if plot.ptype == "Bar" else "line",
+                    attribute=plot.attribute,
+                    color=plot.color,
+                    smooth=plot.smooth,
+                )
+                for plot in component.plots
+            ]
+            cmp = PlotView(
+                ctype="PlotView",
+                name=component.name,
+                label=component.label,
+                plots=plots,
+                position={
+                    "x": component.position.x,
+                    "y": component.position.y,
+                    "w": component.position.w,
+                    "h": component.position.h,
+                },
+                verticalGrid=component.verticalGrid,
+                horizotanGrid=component.horizontalGrid,
+                xAxis=component.xAxis,
+                yAxis=component.yAxis,
+                legend=component.legend,
+                maxValues=component.maxValues,
+                legendPosition=component.legendPosition
             )
         else:
             continue
@@ -377,7 +435,26 @@ def model_2_codin(model) -> Dict[str, Any]:
                 ],
             }
             codin_json["items"][str_id] = config
-
+        elif c["ctype"] == "PlotView":
+            config = {
+                "type": "plot",
+                "name": c["name"],
+                "verticalGrid": c["verticalGrid"],
+                "horizontalGrid": c["horizontalGrid"],
+                "source": c["plots"][0]["broker"],  # TODO: FIX IN CODIN
+                "xAxis": c["xAxis"],
+                "yAxis": c["yAxis"],
+                "legend": c["legend"],
+                "legendPosition": c["legendPosition"],
+                "maxValues": c["maxValues"],
+                "variables": [plot["attribute"] for plot in c["plots"]],
+                "types": [plot["ptype"] for plot in c["plots"]],
+                "topics": [plot["topic"] for plot in c["plots"]],
+                "colors": [plot["color"] for plot in c["plots"]],
+                "smooths": [plot["smooth"] for plot in c["plots"]],
+                "names": [plot["label"] for plot in c["plots"]],
+            }
+            codin_json["items"][str_id] = config
     overlap = check_overlapping(codin_json)
     if overlap:
         raise ValueError("Visual Component Overlapping issue!")

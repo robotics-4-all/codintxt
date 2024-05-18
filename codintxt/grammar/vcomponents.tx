@@ -126,13 +126,6 @@ Plot:
     ('attribute:' attribute=SMID)
     ('color:' color=Color)?
     ('smooth:' smooth=BOOL)?
-    ('verticalGrid:' verticalGrid=BOOL)?
-    ('horizontalGrid:' horizontalGrid=BOOL)?
-    ('xAxis:' xAxis=BOOL)?
-    ('yAxis:' yAxis=BOOL)?
-    ('legend:' legend=BOOL)?
-    ('maxValues:' maxValues=INT)?
-    ('legendPosition:' legendPosition=AlignType)?
 )#
 'end'
 ;
@@ -143,6 +136,13 @@ PlotView:
     ('label:' label=STRING)
     ('position:' position=Placement)
     ('plots:' '-' plots*=[Plot]['-'])
+    ('verticalGrid:' verticalGrid=BOOL)?
+    ('horizontalGrid:' horizontalGrid=BOOL)?
+    ('xAxis:' xAxis=BOOL)?
+    ('yAxis:' yAxis=BOOL)?
+    ('legend:' legend=BOOL)?
+    ('maxValues:' maxValues=INT)?
+    ('legendPosition:' legendPosition=AlignType)?
 )#
 'end'
 ;

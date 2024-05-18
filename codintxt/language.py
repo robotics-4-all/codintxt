@@ -72,11 +72,25 @@ def nid_processor(nid):
     return nid
 
 
+def plot_processor(plot):
+    if not plot.color:
+        plot.color = "#FF9D66"
+
+
+def plotview_processor(plotview):
+    if not plotview.legendPosition:
+        plotview.legendPosition = "topRight"
+    # if not plotview.legendPosition:
+    #     plotview.legendPosition = "topRight"
+
+
 obj_processors = {
     'Gauge': component_processor,
     'ValueDisplay': component_processor,
     'JsonViewer': component_processor,
     'LogsDisplay': component_processor,
+    'Plot': plot_processor,
+    'PlotView': plotview_processor,
     'NID': nid_processor,
 }
 
