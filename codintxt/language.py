@@ -86,15 +86,15 @@ def plotview_processor(plotview):
 
 def gauge_processor(gauge):
     if not gauge.leftColor:
-        gauge.leftColor = "green"
+        gauge.leftColor = "Green"
     if not gauge.rightColor:
-        gauge.rightColor = "red"
+        gauge.rightColor = "Red"
     return component_processor(gauge)
 
 
 def button_processor(button):
     if not button.color:
-        button.color = "blue"
+        button.color = "Blue"
     if not button.bg:
         button.bg = "#FF9D66"
     if not button.hover:
@@ -120,7 +120,6 @@ def get_metamodel(debug: bool = False, global_repo: bool = False):
         classes=class_provider,
         auto_init_attributes=True,
         textx_tools_support=True,
-        # global_repository=GLOBAL_REPO,
         global_repository=global_repo,
         debug=debug,
     )

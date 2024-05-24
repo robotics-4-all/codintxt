@@ -1,0 +1,75 @@
+Metadata
+    name: "RoomMonitoring"
+    description: "Dashboard for monitoring temperature and noise in kitchen and bedroom"
+    author: "AI"
+    token: ""
+end
+
+Broker<MQTT> LocalBroker
+    host: "localhost"
+    port: 1883
+    webPath: "/mqtt"
+    webPort: 8883
+    auth:
+        username: ""
+        password: ""
+end
+
+Entity KitchenSensor
+    type: sensor 
+    topic: 'kitchen/temperature'
+    broker: LocalBroker
+    attributes:
+        - temperature: float
+        - noise: float
+end
+
+Entity BedroomSensor
+    type: sensor
+    topic: 'bedroom/temperature'
+    broker: LocalBroker 
+    attributes:
+        - temperature: float
+        - noise: float
+end
+
+Gauge KitchenTemperature
+    label: "Kitchen Temperature"
+    entity: KitchenSensor
+    attribute: temperature
+    minValue: 0
+    maxValue: 50
+    //leftColor: Red
+    //rightColor: Green
+    //levels: 10
+    position:
+        x: 0
+        y: 0 
+        width: 10
+        height: 10
+end
+
+
+ValueDisplay KitchenNoise
+    label: "Kitchen Noise"
+    entity: KitchenSensor
+    attribute: noise
+    unit: "dB"
+    position:
+        x: 0
+        y: 10
+        width: 10
+        height: 10  
+end
+
+ValueDisplay BedroomNoise
+    label: "Bedroom Noise"
+    entity: BedroomSensor 
+    attribute: noise
+    unit: "dB"
+    position:
+        x: 10
+        y: 10
+        width: 10
+        height: 10
+end
