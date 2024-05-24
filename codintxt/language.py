@@ -67,6 +67,7 @@ def component_processor(component):
         component.attribute = ""
     return component
 
+
 def nid_processor(nid):
     nid = nid.replace("\n", "")
     return nid
@@ -80,12 +81,30 @@ def plot_processor(plot):
 def plotview_processor(plotview):
     if not plotview.legendPosition:
         plotview.legendPosition = "topRight"
-    # if not plotview.legendPosition:
-    #     plotview.legendPosition = "topRight"
+    return plotview
+
+
+def gauge_processor(gauge):
+    if not gauge.leftColor:
+        gauge.leftColor = "green"
+    if not gauge.rightColor:
+        gauge.rightColor = "red"
+    return component_processor(gauge)
+
+
+def button_processor(button):
+    if not button.color:
+        button.color = "blue"
+    if not button.bg:
+        button.bg = "#FF9D66"
+    if not button.hover:
+        button.hover = "#ff7e33"
+    return component_processor(button)
 
 
 obj_processors = {
-    'Gauge': component_processor,
+    'Gauge': gauge_processor,
+    'Button': button_processor,
     'ValueDisplay': component_processor,
     'JsonViewer': component_processor,
     'LogsDisplay': component_processor,
@@ -105,7 +124,6 @@ def get_metamodel(debug: bool = False, global_repo: bool = False):
         global_repository=global_repo,
         debug=debug,
     )
-
     metamodel.register_scope_providers(get_scode_providers())
     metamodel.register_model_processor(model_proc)
     metamodel.register_obj_processors(obj_processors)
