@@ -382,7 +382,7 @@ def model_2_codin(model) -> Dict[str, Any]:
                 "source": c["broker"],
                 "topic": c["topic"],
                 "variable": c["attribute"],
-                "unit": "%",
+                "unit": c["unit"],
             }
             codin_json["items"][str_id] = config
         elif c["ctype"] == "JsonViewer":
