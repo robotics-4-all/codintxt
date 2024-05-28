@@ -62,7 +62,7 @@ def class_provider(name):
     return classes.get(name)
 
 
-def component_processor(component):
+def component_attribute_processor(component):
     if component.attribute == None:
         component.attribute = ""
     return component
@@ -89,7 +89,7 @@ def gauge_processor(gauge):
         gauge.leftColor = "Green"
     if not gauge.rightColor:
         gauge.rightColor = "Red"
-    return component_processor(gauge)
+    return component_attribute_processor(gauge)
 
 
 def button_processor(button):
@@ -99,15 +99,27 @@ def button_processor(button):
         button.bg = "#FF9D66"
     if not button.hover:
         button.hover = "#ff7e33"
-    return component_processor(button)
+    return button
+
+
+def value_display_processor(vdisplay):
+    return component_attribute_processor(vdisplay)
+
+
+def json_viewer_processor(jviewer):
+    return component_attribute_processor(jviewer)
+
+
+def logs_display_processor(ldisplay):
+    return component_attribute_processor(ldisplay)
 
 
 obj_processors = {
     'Gauge': gauge_processor,
     'Button': button_processor,
-    'ValueDisplay': component_processor,
-    'JsonViewer': component_processor,
-    'LogsDisplay': component_processor,
+    'ValueDisplay': value_display_processor,
+    'JsonViewer': json_viewer_processor,
+    'LogsDisplay': logs_display_processor,
     'Plot': plot_processor,
     'PlotView': plotview_processor,
     'NID': nid_processor,
