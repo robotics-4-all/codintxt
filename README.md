@@ -196,6 +196,8 @@ Below is the list of the currently supported Codin Components:
 - Button
 - ButtonGroup
 
+All components are placed in the Codin platform, using their `position` attributes, which include `x` and `y`, denoting the top left corner of the component, and its `width` and `height`. A Codin dashboard has a width of 24 and infinite height, thus select the `position` values carefully to properly visualize the dashboard.
+
 ### Gauge
 
 Visualize entity attributes (or messages arriving at topics in general) using a gauge component.
