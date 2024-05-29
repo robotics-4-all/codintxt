@@ -225,6 +225,19 @@ Gauge G1
 end
 ```
 
+Below is the list of properties for the **Gauge** component:
+- **label**: The label of the plot
+- **entity**: The referenced entity
+- **attribute**: The attribute of the entity to plot
+- **minValue**: Minimum numerical value
+- **maxValue**: Maximum numerical value
+- **leftColor**: Color for the left part of the gauge
+- **rightColor**: Color for the left part of the gauge
+- **hideTxt**: Hide text (numerical value) from the gauge
+- **levels**: Gauge levels (e.g. 10 / 20)
+- **unit**: Data unit (e.g. %, F, sec, )
+- **position**: The position on the canvas, defined using the `Placement` grammar.
+
 ### LogsDisplay
 
 Use this component to monitor entity attributes (or messages arriving at topics in general) formatted as logs.
@@ -244,6 +257,12 @@ LogsDisplay LD1
         height: 10
 end
 ```
+
+Below is the list of properties for the **LogsDisplay** component:
+- **label**: The label of the plot
+- **entity**: The referenced entity
+- **attribute**: The attribute of the entity to plot
+- **position**: The position on the canvas, defined using the `Placement` grammar.
 
 ### ValueDisplay
 
@@ -266,6 +285,13 @@ ValueDisplay VD1
 end
 ```
 
+Below is the list of properties for the **ValueDisplay** component:
+- **label**: The label of the plot
+- **entity**: The referenced entity
+- **attribute**: The attribute of the entity to plot
+- **unit**: Data unit (e.g. %, F, sec, )
+- **position**: The position on the canvas, defined using the `Placement` grammar.
+
 ### AliveDisplay
 
 Use this component to monitor activeness of entities (or topics in general).
@@ -286,6 +312,12 @@ AliveDisplay AV1
 end
 ```
 
+Below is the list of properties for the **AliveDisplay** component:
+- **label**: The label of the plot
+- **entity**: The referenced entity
+- **timeout**: Aliveness timeout in milliseconds
+- **position**: The position on the canvas, defined using the `Placement` grammar.
+
 ### JsonViewer
 
 This component is used to visualize json-formatted entity attributes (or messages arriving at topics in general).
@@ -305,6 +337,11 @@ JsonViewer JV1
 end
 ```
 
+Below is the list of properties for the **JsonViewer** component:
+- **label**: The label of the plot
+- **entity**: The referenced entity
+- **position**: The position on the canvas, defined using the `Placement` grammar.
+
 ### Plot
 
 Adds Plot definitions into a PlotView container for visualization of entity attributes (or messages arriving at topics in general).
@@ -312,24 +349,24 @@ Adds Plot definitions into a PlotView container for visualization of entity attr
 ![image](https://github.com/robotics-4-all/codintxt/assets/4770702/5a568a61-542b-400a-9f21-e799236cfa58)
 
 Below is the list of **Plot** properties:
-- label: The label of the plot
-- ptype: The type of the plot. Select between `Line` and `Bar`.
-- entity: The referenced entity
-- attribute: The attribute of the entity to plot
-- color: The color of the plot (red, blue, yellow, green, cyan)
-- smooth (bool): Smooth the plot. This is a Codin functionality.
+- **label**: The label of the plot
+- **ptype**: The type of the plot. Select between `Line` and `Bar`.
+- **entity**: The referenced entity
+- **attribute**: The attribute of the entity to plot
+- **color**: The color of the plot (red, blue, yellow, green, cyan)
+- **smooth** (bool): Smooth the plot. This is a Codin functionality.
 
 Below is the list of **PlotView** properties:
-- label: The label of the plot
-- plots: The list of plots to include
-- position: The position on the canvas, defined using the `Placement` grammar.
-- xAxis (bool): Enable/Disable x axis.
-- yAxis (bool): Enable/Disable y axis.
-- horizontalGrid (bool): Enable/Disable horizontal plot grid.
-- verticalGrid (bool): Enable/Disable vertical plot grid.
-- legend (bool): Show the legent
-- legendPosition: Select between  topRight, topLeft, bottomRight, bottomLeft
-- maxValues (int): Maximum values to show on the plot
+- **label**: The label of the plot
+- **plots**: The list of plots to include
+- **position**: The position on the canvas, defined using the `Placement` grammar.
+- **xAxis** (bool): Enable/Disable x axis.
+- **yAxis** (bool): Enable/Disable y axis.
+- **horizontalGrid** (bool): Enable/Disable horizontal plot grid.
+- **verticalGrid** (bool): Enable/Disable vertical plot grid.
+- **legend** (bool): Show the legent
+- **legendPosition**: Select between  topRight, topLeft, bottomRight, bottomLeft
+- **maxValues** (int): Maximum values to show on the plot
 
 
 The following examples shows the construction of a **PlotView** that includes three (3) **Plots**.
