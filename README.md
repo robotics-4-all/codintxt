@@ -436,34 +436,41 @@ Commands practically change the state of the actuator, by setting the relevant a
 
 
 ```
-Button Btn1
-    label: "Button1"
-    topic: "actuators.relay_1"
-    broker: CloudMQTT
-    payload:
-        - state: int = 1
+Entity ef_light_13
+    type: actuator
+    topic: "DpdAM.actuators.ef_light_13"
+    broker: locsys_broker
+    attributes:
+        - state: bool
+        - brightness: int
 end
 
-Button Btn2
-    label: "Button2"
-    topic: "actuators.relay_2"
-    broker: CloudMQTT
+Button OpenLight13
+    label: "Open"
+    entity: ef_light_13
     payload:
-        - state: int = 1
+        - state: 1
 end
 
-ButtonGroup Btn_Group_A
-    label: "Btn_Group_A"
+Button CloseLight13
+    label: "Close"
+    entity: ef_light_13
+    payload:
+        - state: 0
+end
+
+ButtonGroup LightButtons
+    label: "Light Control"
     alignTxt: Center
     alignBtns: Horizontal
     buttons:
-        - Btn1
-        - Btn2
+        - OpenLight13
+        - CloseLight13
     position:
-        x: 0
-        y: 0
+        x: 2
+        y: 8
         width: 4
-        height: 4
+        height: 2
 end
 ```
 
