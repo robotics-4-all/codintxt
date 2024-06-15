@@ -6,7 +6,7 @@ import entity
 Model:
     imports*=Import
     (
-        (metadata=Metadata)?
+        (metadata=Metadata)
         (brokers*=MessageBroker)?
         (entities*=Entity)?
         (components*=VisualComponent)
@@ -20,7 +20,7 @@ Metadata:
         ('description:' description=STRING)?
         ('author:' author=STRING)?
         ('email:' email=STRING)?
-        ('token:' token=STRING)?
+        ('token:' token=STRING)
     )#
     'end'
 ;
