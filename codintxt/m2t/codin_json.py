@@ -324,15 +324,6 @@ def model_2_codin(model) -> Dict[str, Any]:
         "metadata": _model.metadata,
     }
 
-    colors = {
-        "Red": "#ff0000",
-        "red": "#ff0000",
-        "Blue": "#00ff00",
-        "blue": "#00ff00",
-        "Green": "#00ff00",
-        "green": "#00ff00"
-    }
-
     # Get the brokers
     brokers = {}
     for b in _json["brokers"]:
@@ -368,8 +359,8 @@ def model_2_codin(model) -> Dict[str, Any]:
                 "variable": c["attribute"],
                 "minValue": c["minValue"],
                 "maxValue": c["maxValue"],
-                "leftColor": colors[c["leftColor"] if "leftColor" in c else ""],
-                "rightColor": colors[c["rightColor"] if "rightColor" in c else ""],
+                "leftColor": c["leftColor"] if "leftColor" in c else "",
+                "rightColor": c["rightColor"] if "rightColor" in c else "",
                 "levels": c["levels"],
                 "hideText": c["hideTxt"],
                 "unit": c["unit"],

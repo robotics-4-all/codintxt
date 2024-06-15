@@ -1,4 +1,5 @@
 import json
+import random
 import os
 import pathlib
 from os.path import join
@@ -48,7 +49,30 @@ def verify_broker_names(model):
         _ids.append(b.name)
 
 
+def transform_colors(model):
+    color_enum_map = {
+        "Red": "#ff0000",
+        "red": "#ff0000",
+        "Blue": "#00ff00",
+        "blue": "#00ff00",
+        "Green": "#00ff00",
+        "green": "#00ff00",
+        "Yellow": "#ffff00",
+        "yellow": "#ffff00",
+    }
+    for component in model.components:
+        if hasattr(component, 'color'):
+            if str(component.color) in (None, ""):
+                continue
+            elif str(component.color) not in color_enum_map:  #  Hex
+                continue
+            try:
+                component.color = color_enum_map[str(component.color)]
+            except:
+                component.color = random.choice(list(color_enum_map.values()))
+
 def model_proc(model, metamodel):
+    transform_colors(model)
     verify_broker_names(model)
     verify_component_names(model)
     verify_attr_id_valid(model)
