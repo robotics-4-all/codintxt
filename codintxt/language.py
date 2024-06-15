@@ -51,6 +51,19 @@ def verify_broker_names(model):
 def model_proc(model, metamodel):
     verify_broker_names(model)
     verify_component_names(model)
+    verify_attr_id_valid(model)
+
+
+def verify_attr_id_valid(model):
+    for component in model.components:
+        if hasattr(component, 'attribute'):
+            if str(component.attribute) in (None, ""):
+                continue
+            if str(component.attribute) not in [str(attr.name) for attr in component.entity.attributes]:
+                raise TextXSemanticError(
+                    f"Attribute <{component.attribute}> does not exist in component <{component.name}>",
+                    **get_location(component),
+                )
 
 
 CUSTOM_CLASSES = [

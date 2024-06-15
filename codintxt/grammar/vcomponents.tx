@@ -15,7 +15,6 @@ VisualComponent:
     ButtonGroup
 ;
 
-
 Gauge:
 'Gauge' name=ID
 (
@@ -164,8 +163,9 @@ Highlight:
     'color:' color=Color
 ;
 
-// TODO
-Color:
+Color: ColorEnum | ColorHex;
+
+ColorEnum:
     'Red'		|
     'red'		|
     'Blue'		|
@@ -178,6 +178,7 @@ Color:
 	'cyan'
 ;
 
+ColorHex: STRING;
 
 Placement:
     'x:' x=INT
