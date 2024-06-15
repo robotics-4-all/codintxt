@@ -54,7 +54,7 @@ Gauge G1
     attribute: temp
     minValue: 0
     maxValue: 1
-    leftColor: "#101010"
+    leftColor: Red
     rightColor: Blue
     levels: 10
     hideTxt: false

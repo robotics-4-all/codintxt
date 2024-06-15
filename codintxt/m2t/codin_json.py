@@ -190,7 +190,7 @@ def model_2_object(model):
         elif component.__class__.__name__ == "JsonViewer":
             cmp = JsonViewer(
                 ctype="JsonViewer",
-                name=component.name,
+                name=component.label,
                 label=component.label,
                 topic=component.entity.topic.replace(".", "/"),
                 broker=component.entity.broker.name,
