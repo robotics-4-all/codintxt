@@ -1,0 +1,30 @@
+name: ci
+
+on: push
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v2
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ~/codintxt
+            git reset --hard origin/main
+            git pull https://${{ secrets.CLONE_TOKEN }}@github.com/robotics-4-all/codintxt main
+            docker build -t codintxt .
+            docker compose down
+            docker compose build
+            docker compose up -d
