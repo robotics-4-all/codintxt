@@ -127,7 +127,6 @@ async def validate_b64(base64_model: str, api_key: str = Security(get_api_key)):
         raise HTTPException(status_code=400, detail=f"Validation error: {e}")
 
 
-
 @api.post("/generate/json")
 async def gen_json(
     gen_auto_model: TransformationModel = Body(...),
@@ -155,6 +154,7 @@ async def gen_json(
             status_code=400, detail=f"Codintxt.Transformation error: {e}"
         )
     return resp
+
 
 @api.post("/generate/streamlit")
 async def gen_streamlit_code(
@@ -188,12 +188,39 @@ async def gen_streamlit_code(
                     )
                     steps.append({"range": [step_min, step_max], "color": color})
                 component["steps"] = steps
-        max_rows = max(component["position"]["r"] for component in json_model["components"])
-        max_columns = max(component["position"]["c"] for component in json_model["components"])
+            if component["ctype"] == "ButtonGroup":
+                if component["alignBtns"] == "Horizontal":
+                    for index in range(len(component["buttons"])):
+                        button = component["buttons"][index]
+                        if "position" not in button:
+                            button["position"] = {}
+                        button["position"]["c"] = component["position"]["c"] + index
+                        button["position"]["r"] = component["position"]["r"]
+                if component["alignBtns"] == "Vertical":
+                    for index in range(len(component["buttons"])):
+                        button = component["buttons"][index]
+                        if "position" not in button:
+                            button["position"] = {}
+                        button["position"]["r"] = component["position"]["r"] + index
+                        button["position"]["c"] = component["position"]["c"]               
+        max_rows = 1  
+        max_columns = 1
+        for component in json_model["components"]:
+            position = component["position"]            
+            r = position["r"]
+            c = position["c"]
+            max_rows = max(max_rows, r)
+            max_columns = max(max_columns, c)
+            if "buttons" in component:
+                for button in component["buttons"]:
+                    button_position = button["position"]
+                    button_r = button_position["r"]
+                    button_c = button_position["c"]
+                    max_rows = max(max_rows, button_r)
+                    max_columns = max(max_columns, button_c)
+
         rendered_code = templates.get_template("streamlit.py.jinja").render(
-            model=json_model,
-            max_rows = max_rows,
-            max_columns = max_columns
+            model=json_model, max_rows=max_rows, max_columns=max_columns
         )
         resp["message"] = "Codintxt-2-Streamlit Transformation success"
         resp["code"] = rendered_code
@@ -205,6 +232,7 @@ async def gen_streamlit_code(
             status_code=400, detail=f"Codintxt.Transformation error: {e}"
         )
     return resp
+
 
 @api.post("/generate/json/file")
 async def gen_json_file(
