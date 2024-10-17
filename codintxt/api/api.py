@@ -10,11 +10,16 @@ from fastapi import FastAPI, File, UploadFile, status, HTTPException, Security, 
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
+from fastapi.templating import Jinja2Templates
 
 from codintxt.language import build_model
 from codintxt.m2t import model_2_codin, model_2_json
 from codintxt.validation import validate_model_file
 from codintxt.definitions import TMP_DIR
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "m2t"))
 
 API_KEY = os.getenv("API_KEY", "1234")
 
@@ -151,6 +156,55 @@ async def gen_json(
         )
     return resp
 
+@api.post("/generate/streamlit")
+async def gen_json(
+    gen_auto_model: TransformationModel = Body(...),
+    api_key: str = Security(get_api_key),
+):
+    resp = {"status": 200, "message": "", "model_json": ""}
+    model = gen_auto_model.model
+    u_id = uuid.uuid4().hex[0:8]
+    model_path = os.path.join(TMP_DIR, f"model-{u_id}.auto")
+    gen_path = os.path.join(TMP_DIR, f"gen-{u_id}")
+    if not os.path.exists(gen_path):
+        os.mkdir(gen_path)
+    with open(model_path, "w") as f:
+        f.write(model)
+    try:
+        model = build_model(model_path)
+        json_model = model_2_json(model)
+        for component in json_model["components"]:
+            if component["ctype"] == "Gauge" and component["levels"] != 0:
+                step_size = (component["maxValue"] - component["minValue"]) / component["levels"]
+                steps = []
+                component["steps"] = []
+                for i in range(component["levels"]):
+                    step_min = component["minValue"] + i * step_size
+                    step_max = component["minValue"] + (i + 1) * step_size
+                    color = (
+                        component["leftColor"]
+                        if i < component["levels"] / 2
+                        else component["rightColor"]
+                    )
+                    steps.append({"range": [step_min, step_max], "color": color})
+                component["steps"] = steps
+        max_rows = max(component["position"]["r"] for component in json_model["components"])
+        max_columns = max(component["position"]["c"] for component in json_model["components"])
+        rendered_code = templates.get_template("streamlit.py.jinja").render(
+            model=json_model,
+            max_rows = max_rows,
+            max_columns = max_columns
+        )
+        resp["message"] = "Codintxt-2-Streamlit Transformation success"
+        resp["code"] = rendered_code
+    except Exception as e:
+        print(e)
+        resp["status"] = 404
+        resp["message"] = str(e)
+        raise HTTPException(
+            status_code=400, detail=f"Codintxt.Transformation error: {e}"
+        )
+    return resp
 
 @api.post("/generate/json/file")
 async def gen_json_file(

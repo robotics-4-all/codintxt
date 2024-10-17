@@ -169,6 +169,8 @@ def model_2_object(model):
                     "y": component.position.y,
                     "w": component.position.w,
                     "h": component.position.h,
+                    "r": component.position.r,
+                    "c": component.position.c
                 },
             )
         elif component.__class__.__name__ == "ValueDisplay":
@@ -263,6 +265,8 @@ def model_2_object(model):
                     "y": component.position.y,
                     "w": component.position.w,
                     "h": component.position.h,
+                    "r": component.position.r,
+                    "c": component.position.c
                 },
             )
         elif component.__class__.__name__ == "PlotView":
