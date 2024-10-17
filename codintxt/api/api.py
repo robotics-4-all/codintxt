@@ -157,7 +157,7 @@ async def gen_json(
     return resp
 
 @api.post("/generate/streamlit")
-async def gen_json(
+async def gen_streamlit_code(
     gen_auto_model: TransformationModel = Body(...),
     api_key: str = Security(get_api_key),
 ):
