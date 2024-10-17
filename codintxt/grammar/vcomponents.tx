@@ -185,4 +185,6 @@ Placement:
     'y:' y=INT
     'width:' w=INT
     'height:' h=INT
+    ('row:' r=INT)?
+    ('column:' c=INT)?
 ;
