@@ -72,7 +72,6 @@ class {{button.label}}Node(Node):
         )
     def publish(self):
         self.pub.publish({{button.payload | safe}})
-        print(f"Published to topic: {self.topic}")
 
 {% endfor %}
 {% endif %}
@@ -110,14 +109,16 @@ def main():
     {% if component.ctype == "Gauge" and component.position.r - 1 == row%}
     
     {# Initializes the placeholder of each widget #}
-    {{component.name}}_placeholder = columns{{row}}[{{component.position.c}} - 1].empty()
+    {{component.name}}_placeholder = columns{{row}}[{{component.position.c - 1}}].empty()
     {%endif%}
-    {% if component.ctype == "ButtonGroup" and component.position.r - 1 == row%}
+    {% if component.ctype == "ButtonGroup"%}
+    {# Creates buttons #}
     {% for button in component.buttons %}
-    with columns{{row}}[{{component.position.c - 1 + loop.index0}}]:
+    {% if button.position.r - 1 == row %}
+    with columns{{row}}[{{button.position.c - 1}}]:
         if st.button("{{button.label}}"):
             {{button.label}}_node.publish()
-            print(f"Button pressed")
+    {% endif %}
     {% endfor %}
     {%endif%}
     {%endfor%}
