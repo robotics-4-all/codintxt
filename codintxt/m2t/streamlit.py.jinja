@@ -1,13 +1,10 @@
 import streamlit as st 
 import plotly.graph_objects as go 
-import requests 
 import logging 
-import threading 
 import time 
-from queue import Queue 
 from commlib.msg import PubSubMessage 
 from commlib.node import Node 
-import streamlit.components.v1 as stComponents
+import streamlit.components.v1 as components
 {# Creates brokers dictionary #}
 {% set brokers_dict = {} %}
 {% for broker in model.brokers %}
@@ -82,6 +79,18 @@ logging.basicConfig(level=logging.INFO)
 def main():
     st.set_page_config(layout="centered")
 
+    {# Function to set the buttons colors #}
+    def setButtonColor(widget_label, font_color, background_color='transparent'):
+            htmlstr = f"""
+                <script>
+                    var elements = Array.from(window.parent.document.querySelectorAll('button'));
+                    var button = elements.find(element => element.innerText === '{widget_label}');
+                    button.style.color = '{font_color}';
+                    button.style.background = '{background_color}';
+                    </script>
+            """
+            components.html(f"{htmlstr}", height=0, width=0)
+
     {%for component in model.components%}
     {% if component.ctype == "Gauge" %}
     
@@ -118,6 +127,8 @@ def main():
     with columns{{row}}[{{button.position.c - 1}}]:
         if st.button("{{button.label}}"):
             {{button.label}}_node.publish()
+        
+        setButtonColor("{{button.label}}","{{button.color}}","{{button.background}}")
     {% endif %}
     {% endfor %}
     {%endif%}
