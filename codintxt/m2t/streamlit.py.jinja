@@ -6,24 +6,20 @@ from commlib.msg import PubSubMessage
 from commlib.node import Node 
 import streamlit.components.v1 as components
 {# Creates brokers dictionary #}
-{% set brokers_dict = {} %}
-{% for broker in model.brokers %}
-    {% set brokers_dict = brokers_dict.update({broker['name']: broker}) %}
-{% endfor %}
-
-{% for component in model.components %}
-{%if component.ctype == "Gauge"%}
+{%- set brokers_dict = {} -%}
+{%- for broker in model.brokers -%}
+    {%- set brokers_dict = brokers_dict.update({broker['name']: broker}) -%}
+{%- endfor -%}
+{%- for component in model.components -%}
+{%-if component.ctype == "Gauge"+%}
 {{component.name}}_values = []
-
 {# Creates on_message function for the subscribers #}
 def {{component.name}}_on_message(msg):
     {{component.name}}_values.append(msg.{{component.attribute}})
 
 class {{component.name}}Message(PubSubMessage):
     {{component.attribute}}: float
-
-{%set broker = brokers_dict.get(component['broker'], None)%}
-
+{%set broker = brokers_dict.get(component['broker'], None)-%}
 {# Creates a subscriber for each Gauge #}
 class {{component.name}}Node(Node):
     def __init__(self, *args, **kwargs):
@@ -43,13 +39,10 @@ class {{component.name}}Node(Node):
             topic=self.topic,
             on_message = lambda msg: {{component.name}}_on_message(msg)
         )
-{% endif %}
-
-{% if component.ctype == "ButtonGroup"%}
-
-{% for button in component.buttons %}
-{%set broker = brokers_dict.get(button['broker'], None)%}
-
+{%- endif -%}
+{%- if component.ctype == "ButtonGroup" -%}
+{%- for button in component.buttons +%}
+{%-set broker = brokers_dict.get(button['broker'], None)-%}
 {# Creates a publisher for each button #}
 class {{button.label}}Node(Node):
     def __init__(self, *args, **kwargs):
@@ -69,16 +62,13 @@ class {{button.label}}Node(Node):
         )
     def publish(self):
         self.pub.publish({{button.payload | safe}})
-
-{% endfor %}
+{% endfor +%}
 {% endif %}
-{% endfor %}
-
+{% endfor +%}
 logging.basicConfig(level=logging.INFO)
 
 def main():
     st.set_page_config(layout="centered")
-
     {# Function to set the buttons colors #}
     def setButtonColor(widget_label, font_color, background_color='transparent'):
             htmlstr = f"""
@@ -90,55 +80,47 @@ def main():
                     </script>
             """
             components.html(f"{htmlstr}", height=0, width=0)
-
-    {%for component in model.components%}
-    {% if component.ctype == "Gauge" %}
-    
+    {%- for component in model.components-%}
+    {%- if component.ctype == "Gauge" -%}
     {# Creates and runs the object for each Gauge Node #}
     {{component.name}}_node = {{component.name}}Node()
     {{component.name}}_node.run()
-    
     {%endif%}
-    {% if component.ctype == "ButtonGroup" %}
-    {% for button in component.buttons %}
-
+    {%- if component.ctype == "ButtonGroup" -%}
+    {%- for button in component.buttons %}
     {# Creates and runs the object for each Button Node #}
     {{button.label}}_node = {{button.label}}Node()
     {{button.label}}_node.run()
-
-    {% endfor %}
+    {%- endfor %}
     {% endif %}
-    {%endfor%}
-
-    {%for row in range(max_rows)%}
-    
+    {%-endfor-%}
+    {%- for row in range(max_rows) -%}
     {# Initializes the columns of each row #}
     columns{{row}} = st.columns({{max_columns}})
-    {%for component in model.components%}
-    {% if component.ctype == "Gauge" and component.position.r - 1 == row%}
-    
+    {%-for component in model.components-%}
+    {%- if component.ctype == "Gauge" and component.position.r - 1 == row-%}
     {# Initializes the placeholder of each widget #}
     {{component.name}}_placeholder = columns{{row}}[{{component.position.c - 1}}].empty()
-    {%endif%}
-    {% if component.ctype == "ButtonGroup"%}
+    {%-endif-%}
+    {% if component.ctype == "ButtonGroup"-%}
     {# Creates buttons #}
-    {% for button in component.buttons %}
-    {% if button.position.r - 1 == row %}
+    {%- for button in component.buttons -%}
+    {%- if button.position.r - 1 == row %}
     with columns{{row}}[{{button.position.c - 1}}]:
         if st.button("{{button.label}}"):
             {{button.label}}_node.publish()
-        
+
         setButtonColor("{{button.label}}","{{button.color}}","{{button.background}}")
-    {% endif %}
-    {% endfor %}
-    {%endif%}
-    {%endfor%}
-    {%endfor%}
-    
+    {%+ endif -%}
+    {%- endfor +%}
+    {%-endif-%}
+    {%-endfor-%}
+    {%-endfor%}
+
     while True:
-    {%for row in range(max_rows)%}
-    {%for component in model.components%}
-    {%if component.ctype == "Gauge" and component.position.r - 1 == row %}
+    {%-for row in range(max_rows)-%}
+    {%-for component in model.components-%}
+    {%-if component.ctype == "Gauge" and component.position.r - 1 == row +%}
         {# Create the gauge widget for each object #}
         with columns{{row}}[{{component.position.c - 1}}]:
             with {{component.name}}_placeholder.container():
@@ -150,18 +132,17 @@ def main():
                         'axis': {'range': [{{ component.minValue }}, {{ component.maxValue }}]},
                         'bar': {'color': 'white'},
                         'steps': [
-                        {% for step in component.steps %}
+                        {%- for step in component.steps -%}
                             {'range': [{{ step.range[0] }}, {{ step.range[1] }}], 'color': '{{ step.color }}'},
-                        {% endfor %}
+                        {%- endfor -%}
                         ],
                         } 
                     ))
                 st.plotly_chart({{component.name}}_fig, use_container_width=True)
             time.sleep(1)
-        
-    {%endif%}
-    {%endfor%}
-    {%endfor%}
+    {%-endif-%}
+    {%-endfor+%}
+    {%-endfor%}
 
 if __name__ == "__main__":
     main()
